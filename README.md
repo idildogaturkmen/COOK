@@ -30,10 +30,10 @@ Open [http://localhost:3000](http://localhost:3000).
 | `COOK_AUTH_BYPASS` | No | Set `true` to use dev auth stub (default) |
 | `COOK_WORKSPACE_ID` | No | Pin active workspace when multiple exist |
 
-Future (not needed for M1):
+Future (not needed — skills run deterministically without them):
 
 - `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY` — Supabase Auth
-- `OPENAI_API_KEY` — real LLM for `/api/ai`
+- `COOK_AI_PROVIDER=openai` + `OPENAI_API_KEY` — take the LLM branch in `src/lib/ai/provider.ts`
 
 Copy `.env.example` to `.env`. **Never commit secrets.**
 
