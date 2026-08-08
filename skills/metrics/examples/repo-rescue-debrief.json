@@ -1,0 +1,102 @@
+{
+  "_comment": "Sample AFTERS response for the seed event 'Build Night: Repo Rescue'. Matches AiResponse<MetricsData> in src/lib/ai/types.ts. Use as a fixture when building against the metrics role.",
+  "role": "metrics",
+  "eventId": "seed-event-repo-rescue",
+  "summary": "AFTERS package for Build Night: Repo Rescue (confirmed). Weekly hands-on session where members bring stuck projects, broken repos, or half-finished ideas. Nothing is saved until you apply it.",
+  "suggestions": [
+    "Log attendance first — every other number reads against it.",
+    "Apply the +1 week and +1 month follow-ups so momentum does not decay.",
+    "The thank-you note lands in Approvals as a draft; an officer still sends it."
+  ],
+  "data": {
+    "metrics": [
+      {
+        "name": "attendance vs. last time",
+        "value": null,
+        "unit": "people",
+        "notes": "Previously logged 24 — record the delta so trends stay readable."
+      },
+      {
+        "name": "volunteer hours",
+        "value": null,
+        "unit": "hours",
+        "notes": "Officer + mentor hours, setup through cleanup"
+      },
+      {
+        "name": "would recommend",
+        "value": null,
+        "unit": "/5",
+        "notes": "Average of the post-event pulse question"
+      },
+      {
+        "name": "demos shown",
+        "value": null,
+        "unit": "demos",
+        "notes": "Count lightning demos — a good proxy for how far projects got."
+      }
+    ],
+    "followUps": [
+      {
+        "title": "Send thank-you note to attendees and mentors",
+        "dueAt": "2026-08-14T03:00:00.000Z",
+        "notes": "Within 48 hours, while the event is still fresh. Goes through Approvals."
+      },
+      {
+        "title": "Close out 2 open tasks from run-up",
+        "dueAt": "2026-08-15T03:00:00.000Z",
+        "notes": "Prepare mentor signup sheet · Stock snacks and name tags"
+      },
+      {
+        "title": "Share pulse survey results with officers",
+        "dueAt": "2026-08-19T03:00:00.000Z",
+        "notes": "+1 week: summarize what to keep and change for the next Build Night: Repo Rescue."
+      },
+      {
+        "title": "Re-invite first-timers to the next event",
+        "dueAt": "2026-09-11T03:00:00.000Z",
+        "notes": "+1 month: a personal nudge converts one-time attendees into regulars."
+      }
+    ],
+    "debrief": {
+      "wentWell": [
+        "Prep held up: 1 of 4 run-up tasks were done before doors opened (e.g. confirm room booking with makerspace).",
+        "The 5-block run of show kept the room moving — no dead air between segments.",
+        "Progress on the stated goal: help 3+ members unblock a pr or local dev setup."
+      ],
+      "improve": [
+        "3 tasks slipped past the event (post #build-night reminder in club slack) — pull the deadline a week earlier next time.",
+        "Sign-in was the bottleneck at the door; pre-print name tags for anyone who RSVP'd.",
+        "Under-served goal: recruit 2 volunteers for next month's workshop — assign one officer to own it explicitly."
+      ],
+      "quotes": [
+        "\"I finally got my dev environment running — I'd been stuck for weeks.\" — attendee, Build Night: Repo Rescue",
+        "\"Having someone sit with me for ten minutes beat an hour of docs.\" — first-time attendee",
+        "\"Tell me when the next one is; I want to bring a friend.\" — returning member"
+      ],
+      "nextEventIdeas": [
+        "Build Night: Repo Rescue: part two, same format, with a dedicated newcomer table",
+        "Officer-led mini workshop on the single question that came up most tonight",
+        "Partner co-host session to bring in a new audience"
+      ]
+    },
+    "surveyQuestions": [
+      "How likely are you to recommend Build Night: Repo Rescue to a friend? (1–5)",
+      "What is one thing you got done or learned tonight?",
+      "What slowed you down or felt confusing?",
+      "What should we run next month?",
+      "Would you like to help mentor at a future event? (yes / maybe / no)"
+    ],
+    "insights": [
+      "Already logged: attendance 24 people, new signups 7 people.",
+      "1 follow-up still open — oldest is \"Survey attendees on onboarding docs\".",
+      "Event status is confirmed; mark it completed once AFTERS is filled in so it stops showing as upcoming work.",
+      "Thank-you notes sent within 48 hours are the cheapest retention lever a club has."
+    ],
+    "draftPreview": {
+      "channel": "SLACK",
+      "subject": "Thank you — Build Night: Repo Rescue",
+      "body": "Thanks for coming to Build Night: Repo Rescue on Aug 12! 🙌\n\nThe room was full of people helping each other out, and it showed. We set out to help 3+ members unblock a pr or local dev setup — you made that happen.\n\nTwo quick things:\n1. Tell us how it went — the 4-question pulse survey takes under a minute.\n2. Save the date for the next one; bring the project you did not get to tonight.\n\nIf you want to help mentor next time, reply here and we will add you to the list.\n\n— The officer team"
+    }
+  },
+  "stub": false
+}

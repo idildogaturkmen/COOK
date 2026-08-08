@@ -1,8 +1,10 @@
 # COOK — Club Event Ops
 
-Event operations for college club officers. M1 delivers a working Next.js skeleton with manual CRUD, an approval queue for outreach drafts, and stub AI skills your teammates can plug in later.
+Event operations for college club officers: plan an event, run it, and close it out. Manual CRUD works on its own; three skills (Ops Assist, Outreach Assist, and **AFTERS**) suggest work that an officer confirms before anything is saved or sent.
 
 **Not** a social campus app. **Not** five chatbots. One app spine + skill contracts.
+
+Recording a demo? `docs/DEMO.md` is the click-through script.
 
 ## Quick start
 
@@ -28,10 +30,10 @@ Open [http://localhost:3000](http://localhost:3000).
 | `COOK_AUTH_BYPASS` | No | Set `true` to use dev auth stub (default) |
 | `COOK_WORKSPACE_ID` | No | Pin active workspace when multiple exist |
 
-Future (not needed for M1):
+Future (not needed — skills run deterministically without them):
 
 - `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY` — Supabase Auth
-- `OPENAI_API_KEY` — real LLM for `/api/ai`
+- `COOK_AI_PROVIDER=openai` + `OPENAI_API_KEY` — take the LLM branch in `src/lib/ai/provider.ts`
 
 Copy `.env.example` to `.env`. **Never commit secrets.**
 
@@ -41,13 +43,16 @@ Copy `.env.example` to `.env`. **Never commit secrets.**
 
 | Area | Path | Purpose |
 |------|------|---------|
-| Home digest | `src/app/page.tsx` | This-week events, open tasks, draft count |
-| Event detail | `src/app/events/[id]/page.tsx` | Brief, tasks, run-of-show |
+| Home cockpit | `src/app/page.tsx` | Skills strip, counters, events in the next 14 days |
+| Event detail | `src/app/events/[id]/page.tsx` | Brief, tasks, run-of-show, Ops/Outreach/AFTERS panels |
 | Approvals | `src/app/approvals/page.tsx` | Draft queue (approve-before-send) |
 | CRUD actions | `src/lib/actions/crud.ts` | Server actions for all manual ops |
 | Auth stub | `src/lib/auth.ts` | Dev bypass; NextAuth/Supabase-ready |
 | Workspace scope | `src/lib/workspace.ts` | Multi-tenant context |
-| AI router | `src/app/api/ai/route.ts` | Single entrypoint for skills |
+| AI router | `src/app/api/ai/route.ts` | Single entrypoint (validation) |
+| Skill dispatch | `src/lib/ai/router.ts` | Loads event context, routes to handlers |
+| Skill handlers | `src/lib/ai/{ops,outreach,metrics}/` | Deterministic v1 — no API key |
+| Apply actions | `src/lib/actions/assist.ts` | Persist only what an officer ticked |
 
 ### Data model (`prisma/schema.prisma`)
 
@@ -69,10 +74,20 @@ Teammates own skill folders. The app calls one endpoint:
 ```bash
 curl -X POST http://localhost:3000/api/ai \
   -H 'Content-Type: application/json' \
-  -d '{"role":"ops","input":"Suggest tasks for build night"}'
+  -d '{"role":"metrics","eventId":"<id>","input":"debrief"}'
 ```
 
-See `skills/README.md` for contracts and parallel-work rules.
+| Role (API) | UI name | Status |
+|------------|---------|--------|
+| `ops` | Ops Assist | Live — readiness gaps, tasks, run of show |
+| `outreach` | Outreach Assist | Live — drafts that stop at Approvals |
+| `metrics` | **AFTERS** | Live — metrics, follow-ups, debrief, thank-you draft |
+| `manager` | Manager | Live — keyword router to the right skill |
+
+`metrics` is branded **AFTERS** in the UI; the API role name never changes.
+All handlers are deterministic (templates filled from Prisma data), so the app
+works offline with no API key. See `skills/README.md` for contracts, the skill
+author quickstart, and parallel-work rules.
 
 ## Scripts
 
@@ -91,9 +106,10 @@ See `skills/README.md` for contracts and parallel-work rules.
 - **TODO:** Wire NextAuth or Supabase Auth; replace bypass.
 - **TODO(RLS):** Enable Supabase RLS policies (stubs in `docs/supabase-rls-stubs.sql`).
 
-## What's stubbed in M1
+## What's stubbed
 
-- `/api/ai` — typed JSON placeholder, no LLM
+- `/api/ai` — real deterministic handlers for `ops`, `outreach`, `metrics`, and
+  `manager` (`stub: false`); no LLM provider wired
 - Auth — dev bypass only
 - Draft "Approve" — marks `SENT` in DB; no Gmail/Slack integration
 - Supabase/Postgres — schema documented, not wired
@@ -113,10 +129,11 @@ See `skills/README.md` for contracts and parallel-work rules.
 2. Drafts must flow through **Approvals** — never auto-send
 3. Use `createDraft` server action to persist suggestions
 
-### Metrics skill authors
+### AFTERS / metrics skill authors
 
-1. Read `skills/metrics/SKILL.md`
+1. Read `skills/metrics/SKILL.md` — it is the reference pack (contract, prompts, sample output)
 2. Suggest metrics/follow-ups; officers confirm before save
+3. Keep the API role `metrics`; "AFTERS" is UI branding only
 
 ### App spine changes
 

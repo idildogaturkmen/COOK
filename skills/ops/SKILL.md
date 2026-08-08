@@ -19,7 +19,7 @@ POST /api/ai
 }
 ```
 
-### Expected response shape (when implemented)
+### Response shape
 
 ```json
 {
@@ -36,13 +36,28 @@ POST /api/ai
 }
 ```
 
+Typed as `OpsData` in `src/lib/ai/types.ts`.
+
 ## Implementation notes
 
 1. Read event context from Prisma (`Event`, `Task`, `RunOfShowItem`) scoped by workspace.
 2. Never auto-create drafts or send messages — return structured suggestions for officer review.
-3. Register your prompt/tools in the skill folder; wire into `/api/ai` when ready.
+3. Register your prompt/tools in the skill folder; the router lives in `src/lib/ai/router.ts`.
 4. See `skills/README.md` for parallel development guidelines.
 
-## M1 status
+## Status: live (deterministic v1)
 
-**Stub only.** `/api/ai` returns placeholder JSON. Implement this skill by extending the route handler to load `skills/ops/` prompts and call your LLM provider.
+Handler: `src/lib/ai/ops/handler.ts` — no API key required.
+
+**Ops Assist** (UI name) compares the event's tasks and run of show against a
+standard club checklist plus a format playbook (build night, panel/talk) and
+returns the gaps, along with `risks` such as unassigned work or a missing
+timeline. It returns `stub: false`.
+
+Officers see suggestions in the Ops Assist panel on `/events/[id]`, tick what
+they want, and press Apply — which calls `applyOps()` in
+`src/lib/actions/assist.ts` to create `Task` and `RunOfShowItem` rows. The
+handler itself never writes to the database.
+
+To add an LLM later, branch inside the handler at `isLlmEnabled()`
+(`src/lib/ai/provider.ts`) and keep the same `OpsData` shape.

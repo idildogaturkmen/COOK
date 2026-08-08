@@ -28,4 +28,4 @@ Gold list shape (from real UCSD build-night run): Locked goal → Hit first this
 
 If nested skills don’t appear in Plugins, add each subfolder as its own private skill (or promote one level under `skills/`).
 
-`SKILL.md` in this parent folder is the COOK Approvals app stub — not a Grok outreach playbook. Leave it alone unless you’re wiring `/api/ai`.
+`SKILL.md` in this parent folder is the COOK app's `outreach` role — now a live deterministic handler behind `/api/ai`, not a Grok outreach playbook. Leave it alone unless you’re wiring `/api/ai`.

@@ -1,16 +1,17 @@
 import Link from "next/link";
 import { Card } from "@/components/card";
+import { Chip } from "@/components/chip";
 import { PageHeader } from "@/components/page-header";
 import { createDraft, updateDraftStatus } from "@/lib/actions/crud";
 import { db } from "@/lib/db";
 import { getActiveWorkspaceId } from "@/lib/workspace";
 
-const statusColors: Record<string, string> = {
-  DRAFT: "bg-zinc-100 text-zinc-700 dark:bg-zinc-800 dark:text-zinc-300",
-  AWAITING_APPROVAL: "bg-amber-100 text-amber-800 dark:bg-amber-900/40 dark:text-amber-200",
-  SENT: "bg-green-100 text-green-800 dark:bg-green-900/40 dark:text-green-200",
-  REJECTED: "bg-red-100 text-red-800 dark:bg-red-900/40 dark:text-red-200",
-};
+const statusTone = {
+  DRAFT: "zinc",
+  AWAITING_APPROVAL: "amber",
+  SENT: "green",
+  REJECTED: "red",
+} as const;
 
 const statusLabel: Record<string, string> = {
   DRAFT: "Draft",
@@ -19,16 +20,29 @@ const statusLabel: Record<string, string> = {
   REJECTED: "Rejected",
 };
 
+const statusRank: Record<string, number> = {
+  AWAITING_APPROVAL: 0,
+  DRAFT: 1,
+  SENT: 2,
+  REJECTED: 3,
+};
+
 export default async function ApprovalsPage() {
   const workspaceId = await getActiveWorkspaceId();
 
   const drafts = workspaceId
-    ? await db.draft.findMany({
-        where: { workspaceId },
-        orderBy: { updatedAt: "desc" },
-        include: { event: { select: { title: true } } },
-      })
+    ? (
+        await db.draft.findMany({
+          where: { workspaceId },
+          orderBy: { updatedAt: "desc" },
+          include: { event: { select: { id: true, title: true } } },
+        })
+      ).sort((a, b) => statusRank[a.status] - statusRank[b.status])
     : [];
+
+  const awaiting = drafts.filter((d) => d.status === "AWAITING_APPROVAL").length;
+  const inDraft = drafts.filter((d) => d.status === "DRAFT").length;
+  const sent = drafts.filter((d) => d.status === "SENT").length;
 
   const events = workspaceId
     ? await db.event.findMany({
@@ -42,8 +56,32 @@ export default async function ApprovalsPage() {
     <>
       <PageHeader
         title="Approvals"
-        description="Draft queue for email and Slack outreach. Approve before send — no auto-send in M1."
-      />
+        description="Every message an officer or a skill writes stops here. Nothing is sent automatically."
+      >
+        <Link
+          href="/"
+          className="rounded-md border border-zinc-300 px-3 py-1.5 text-sm hover:bg-zinc-100 dark:border-zinc-700 dark:hover:bg-zinc-800"
+        >
+          ← Home
+        </Link>
+      </PageHeader>
+
+      {workspaceId ? (
+        <div className="mb-6 flex flex-col gap-2 border-y border-zinc-200 py-3 sm:flex-row sm:items-center sm:justify-between dark:border-zinc-800">
+          <div className="flex flex-wrap items-center gap-2">
+            <Chip tone="amber" dot>
+              {awaiting} awaiting approval
+            </Chip>
+            <Chip dot>{inDraft} in draft</Chip>
+            <Chip tone="green" dot>
+              {sent} sent
+            </Chip>
+          </div>
+          <p className="text-xs text-zinc-500 dark:text-zinc-400">
+            Drafts from Outreach Assist and AFTERS arrive here as “awaiting approval”.
+          </p>
+        </div>
+      ) : null}
 
       {!workspaceId ? (
         <Card>
@@ -103,24 +141,35 @@ export default async function ApprovalsPage() {
           </Card>
 
           <Card title="Draft queue">
+            <p className="mb-4 text-xs text-zinc-500 dark:text-zinc-400">
+              Approving records the decision and marks the draft sent. Gmail and Slack delivery is
+              not wired up, so the club stays in control of what actually goes out.
+            </p>
             {drafts.length > 0 ? (
               <ul className="space-y-4">
                 {drafts.map((draft) => (
                   <li
                     key={draft.id}
-                    className="rounded-md border border-zinc-200 p-4 dark:border-zinc-800"
+                    className={`rounded-lg border p-4 transition ${
+                      draft.status === "AWAITING_APPROVAL"
+                        ? "border-amber-300 bg-amber-50/40 dark:border-amber-900/60 dark:bg-amber-950/20"
+                        : "border-zinc-200 dark:border-zinc-800"
+                    }`}
                   >
                     <div className="mb-2 flex flex-wrap items-center gap-2">
-                      <span className="text-xs font-medium uppercase text-zinc-500">
-                        {draft.channel}
-                      </span>
-                      <span
-                        className={`rounded-full px-2 py-0.5 text-xs font-medium ${statusColors[draft.status]}`}
-                      >
+                      <Chip tone={draft.channel === "SLACK" ? "violet" : "blue"}>
+                        {draft.channel === "SLACK" ? "# Slack" : "✉ Email"}
+                      </Chip>
+                      <Chip tone={statusTone[draft.status]} dot>
                         {statusLabel[draft.status]}
-                      </span>
+                      </Chip>
                       {draft.event ? (
-                        <span className="text-xs text-zinc-500">· {draft.event.title}</span>
+                        <Link
+                          href={`/events/${draft.event.id}`}
+                          className="text-xs text-zinc-500 underline-offset-2 hover:underline"
+                        >
+                          · {draft.event.title}
+                        </Link>
                       ) : null}
                     </div>
                     {draft.subject ? (
@@ -156,7 +205,7 @@ export default async function ApprovalsPage() {
                                 type="submit"
                                 className="rounded bg-green-600 px-3 py-1 text-xs font-medium text-white"
                               >
-                                Approve (stub send)
+                                Approve &amp; mark sent
                               </button>
                             </form>
                             <form

@@ -25,8 +25,11 @@ export function AppNav() {
             ))}
           </nav>
         </div>
-        <span className="rounded-full bg-amber-100 px-2 py-0.5 text-xs font-medium text-amber-800 dark:bg-amber-900/40 dark:text-amber-200">
-          M1 · AI off
+        <span
+          title="Ops, Outreach, and AFTERS run deterministic handlers — no API key needed"
+          className="rounded-full bg-amber-100 px-2 py-0.5 text-xs font-medium text-amber-800 dark:bg-amber-900/40 dark:text-amber-200"
+        >
+          Skills live · no API key
         </span>
       </div>
     </header>
