@@ -171,6 +171,17 @@ Alex`,
     },
   });
 
+  await db.metric.create({
+    data: {
+      workspaceId: workspace.id,
+      eventId: event.id,
+      name: "new signups",
+      value: 7,
+      unit: "people",
+      notes: "First-timers who joined the mailing list last time",
+    },
+  });
+
   await db.followUp.create({
     data: {
       eventId: event.id,
@@ -178,6 +189,15 @@ Alex`,
       title: "Survey attendees on onboarding docs",
       notes: "Send Google Form link in Slack after demos",
       dueAt: eventEnd,
+    },
+  });
+
+  await db.followUp.create({
+    data: {
+      eventId: event.id,
+      title: "Book Makerspace Room B for next month",
+      notes: "Done — confirmed with Sam",
+      completed: true,
     },
   });
 

@@ -17,7 +17,7 @@ POST /api/ai
 }
 ```
 
-### Expected response shape (when implemented)
+### Response shape
 
 ```json
 {
@@ -28,16 +28,20 @@ POST /api/ai
   "data": {
     "drafts": [
       {
+        "label": "Slack announcement (#general)",
         "channel": "EMAIL | SLACK",
         "subject": "...",
         "body": "...",
-        "suggestedStatus": "DRAFT"
+        "suggestedStatus": "AWAITING_APPROVAL"
       }
-    ]
+    ],
+    "notes": ["..."]
   },
   "stub": false
 }
 ```
+
+Typed as `OutreachData` in `src/lib/ai/types.ts`.
 
 ## Implementation notes
 
@@ -46,6 +50,19 @@ POST /api/ai
 3. Officers submit drafts for approval; only approved drafts may be marked `SENT` (M1 stubs send).
 4. Do not build a separate chatbot UI — responses feed the Approvals screen.
 
-## M1 status
+## Status: live (deterministic v1)
 
-**Stub only.** Wire LLM + prompt templates in `skills/outreach/` when ready.
+Handler: `src/lib/ai/outreach/handler.ts` — no API key required.
+
+**Outreach Assist** (UI name) picks an intent from the input (announce, 24h
+reminder, partner/venue, recruit mentors) and returns two ready-to-edit message
+previews built from event facts. It returns `stub: false`.
+
+Applying a preview calls `applyOutreachDrafts()` in
+`src/lib/actions/assist.ts`, which creates `Draft` rows with status
+`AWAITING_APPROVAL`. They appear on `/approvals`, where an officer approves or
+rejects. **Nothing is sent from the skill or the panel** — there is no send path
+in the codebase yet, and adding one must keep the approval gate.
+
+Generated copy uses no attendee names or emails. To add an LLM later, branch at
+`isLlmEnabled()` (`src/lib/ai/provider.ts`) and keep the same `OutreachData` shape.
