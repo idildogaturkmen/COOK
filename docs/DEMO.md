@@ -49,8 +49,8 @@ drafts appear (Slack announcement + 24h reminder) with full body text. Tick one
 
 **5. Approvals (15s)**
 Follow the link. The new draft sits at the top as **awaiting approval**, with the
-event linked. Show **Approve (stub send)** and **Reject**. Approve it and watch
-the counters change.
+event linked. Show **Approve & mark sent** and **Reject**. Approve it and watch the counters
+change.
 
 **6. AFTERS — the after-event experience (35s)**
 Back to the event, jump to **AFTERS**. Existing metrics (attendance 24, new

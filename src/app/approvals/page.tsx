@@ -140,6 +140,10 @@ export default async function ApprovalsPage() {
           </Card>
 
           <Card title="Draft queue">
+            <p className="mb-4 text-xs text-zinc-500 dark:text-zinc-400">
+              Approving records the decision and marks the draft sent. Gmail and Slack delivery is
+              not wired up, so the club stays in control of what actually goes out.
+            </p>
             {drafts.length > 0 ? (
               <ul className="space-y-4">
                 {drafts.map((draft) => (
@@ -198,7 +202,7 @@ export default async function ApprovalsPage() {
                                 type="submit"
                                 className="rounded bg-green-600 px-3 py-1 text-xs font-medium text-white"
                               >
-                                Approve (stub send)
+                                Approve &amp; mark sent
                               </button>
                             </form>
                             <form
