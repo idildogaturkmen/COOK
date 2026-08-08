@@ -39,17 +39,18 @@ Reusable Cursor / Grok Bot skills for college club event planning (standalone fr
 | Skill | Folder | Responsibility |
 |-------|--------|----------------|
 | Plan club event | `skills/plan-club-event/` | Concept, budget, run-of-show, lock gates before ordering |
-| Luma event invite | `skills/luma-event-invite/` | Draft Luma invite in browser; no publish without yes |
-| Amazon event supplies | `skills/amazon-event-supplies/` | Cafe/party supplies with quality + delivery filters |
-| In-N-Out event order | `skills/innout-event-order/` | Pickup food run plan — separate from the Amazon cart |
+| Luma event invite | `skills/luma-event-invite/` | Collect vibes, brand assets, and language; draft Luma invite in browser; no publish without yes |
+| Amazon event supplies | `skills/amazon-event-supplies/` | Headcount-based quantity research; cafe/party supplies with quality + delivery filters (prefer slightly too much) |
+| Event food order | `skills/event-food-order/` | Food from any restaurant/app — separate from the Amazon cart |
+| In-N-Out event order | `skills/innout-event-order/` | **Deprecated alias** → use Event food order |
 | RSVP club loop | `skills/rsvp-club-loop/` | End-to-end orchestration across the skills above |
 
 Typical flow:
 
 1. Plan the event (concept, budget, run-of-show)
-2. Create the Luma event invite via `luma-event-invite` (draft in browser; no publish without yes)
+2. Create the Luma event invite via `luma-event-invite` — collect **vibes**, **brand assets**, and **language** first; draft in browser; no publish without yes
 3. Source cafe/party supplies on Amazon with quality + delivery bars
-4. Run a separate In-N-Out (or similar) food order plan — never mixed into the Amazon cart
+4. Run a separate **Event food order** plan (user picks vendor) — never mixed into the Amazon cart
 
 ### Install on another account
 
@@ -58,7 +59,7 @@ Copy the skill folders under `skills/` into that agent's workflows / skills dire
 ### Demo defaults (Cursor Build Night)
 
 - Fun "matcha cafe" station the organizer runs themselves
-- In-N-Out as a mid-event food run
+- User-chosen food vendor via Event food order (no default restaurant)
 - Dry-run safe: never publish invites or checkout without explicit approval
 
 ## How to add your skill
