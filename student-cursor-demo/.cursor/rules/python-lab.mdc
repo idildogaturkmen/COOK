@@ -1,0 +1,13 @@
+---
+description: Python lab conventions for student-cursor-demo (type hints, pytest, no secrets)
+globs: student-cursor-demo/**/*.py
+alwaysApply: false
+---
+
+# Python lab style
+
+- Prefer type hints on public functions.
+- Use `pytest` (not `unittest`).
+- Never commit `.env`, API keys, or Gradescope credentials.
+- Keep functions small; put demos/examples under `examples/` if needed.
+- When fixing bugs, add a regression test that would have failed before the fix.
