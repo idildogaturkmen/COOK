@@ -1,11 +1,8 @@
 """Generate COOK demo deck -> docs/cook-demo.pptx
 
-Design direction: "The Pass" — the deck is plated like a kitchen pass.
-Paper background, ink type, one flame accent. Display type is Georgia
-italic (the chalkboard menu face), body is Segoe UI. Signature: the
-approval stamp — a rotated outline chip that appears wherever COOK
-stops for a human yes. Kicker + folio + hairline furniture on every
-content slide; Chicago-style headlines; typographic ellipsis.
+Direction: "Proof, Not Vibes" — a measurement story. Same Pass design
+system (paper, ink, flame, Georgia italic display, approval stamp) with
+one new device: oversized proof numerals wherever the deck makes a claim.
 """
 from pptx import Presentation
 from pptx.util import Inches, Pt, Emu
@@ -13,16 +10,16 @@ from pptx.dml.color import RGBColor
 from pptx.enum.text import PP_ALIGN, MSO_ANCHOR
 from pptx.enum.shapes import MSO_SHAPE
 
-PAPER = RGBColor(0xF7, 0xF2, 0xE9)    # warm paper
-INK = RGBColor(0x1B, 0x17, 0x12)      # soft black
-FLAME = RGBColor(0xD4, 0x4A, 0x24)    # flame (deepened for contrast on paper)
-MUTED = RGBColor(0x6E, 0x64, 0x55)    # warm grey
-CARD = RGBColor(0xFF, 0xFC, 0xF6)     # plated card
-LINE = RGBColor(0xD9, 0xCF, 0xBE)     # hairline
+PAPER = RGBColor(0xF7, 0xF2, 0xE9)
+INK = RGBColor(0x1B, 0x17, 0x12)
+FLAME = RGBColor(0xD4, 0x4A, 0x24)
+MUTED = RGBColor(0x6E, 0x64, 0x55)
+CARD = RGBColor(0xFF, 0xFC, 0xF6)
+LINE = RGBColor(0xD9, 0xCF, 0xBE)
 
 DISPLAY = "Georgia"
 BODY = "Segoe UI"
-ELL = "\u2026"  # …
+ELL = "\u2026"
 
 prs = Presentation()
 prs.slide_width = Inches(13.333)
@@ -88,7 +85,6 @@ def hairline(s, l, t, w):
 
 
 def furniture(s, section, n, total=8):
-    """Kicker + folio + top hairline on every content slide."""
     hairline(s, Inches(0.9), Inches(0.62), Inches(11.53))
     text(s, Inches(0.9), Inches(0.74), Inches(9), Inches(0.35), [
         {"runs": [
@@ -101,7 +97,7 @@ def furniture(s, section, n, total=8):
     ])
 
 
-def headline(s, runs, t=Inches(1.35), size=52, w=Inches(11.53)):
+def headline(s, runs, t=Inches(1.3), size=52, w=Inches(11.53)):
     if isinstance(runs, str):
         runs = [R(runs, size, INK, italic=True, font=DISPLAY)]
     text(s, Inches(0.9), t, w, Inches(1.7), [{"runs": runs, "line": 1.02}])
@@ -136,24 +132,33 @@ def card(s, l, t, w, h):
     return c
 
 
+def bignum(s, l, t, num, label, num_size=64, w=Inches(3.4), num_color=FLAME):
+    text(s, l, t, w, Inches(1.1), [
+        {"runs": [R(num, num_size, num_color, bold=True, font=DISPLAY, spacing=-100)], "line": 0.95}
+    ])
+    text(s, l, t + Inches(num_size / 72.0 + 0.12), w, Inches(0.9), [
+        {"runs": [R(label, 13.5, MUTED)], "line": 1.15}
+    ])
+
+
 # ============ 1. TITLE ============
 s = slide()
 hairline(s, Inches(0.9), Inches(0.62), Inches(11.53))
 text(s, Inches(0.9), Inches(0.74), Inches(9), Inches(0.35), [
     {"runs": [R("CLUB EVENT OPS", 11, MUTED, bold=True, spacing=500)]}
 ])
-text(s, Inches(0.82), Inches(1.55), Inches(11.8), Inches(2.7), [
-    {"runs": [R("COOK", 190, INK, bold=True, font=DISPLAY, spacing=-200)], "line": 0.9}
+text(s, Inches(0.82), Inches(1.5), Inches(11.8), Inches(2.7), [
+    {"runs": [R("COOK", 180, INK, bold=True, font=DISPLAY, spacing=-200)], "line": 0.9}
 ])
-text(s, Inches(0.9), Inches(4.3), Inches(11.5), Inches(1.0), [
+text(s, Inches(0.9), Inches(4.15), Inches(11.5), Inches(1.0), [
     {"runs": [
-        R("Every club event, ", 30, INK, italic=True, font=DISPLAY),
-        R("plated.", 30, FLAME, italic=True, font=DISPLAY),
+        R("Club events, ", 30, INK, italic=True, font=DISPLAY),
+        R("measured.", 30, FLAME, italic=True, font=DISPLAY),
     ]}
 ])
-text(s, Inches(0.9), Inches(5.2), Inches(10.5), Inches(1.2), [
-    {"runs": [R("One home for the plan, the invite, the orders & the morning after —", 17, MUTED)], "after": 2},
-    {"runs": [R("with an AI kitchen staff that preps everything & waits for your yes.", 17, MUTED)]},
+text(s, Inches(0.9), Inches(5.05), Inches(10.8), Inches(1.2), [
+    {"runs": [R("COOK runs the event & keeps the score — turnout, spend, replies, follow-through —", 17, MUTED)], "after": 2},
+    {"runs": [R("so every event makes the next one sharper.", 17, MUTED)]},
 ])
 hairline(s, Inches(0.9), Inches(6.7), Inches(11.53))
 text(s, Inches(0.9), Inches(6.85), Inches(11.53), Inches(0.4), [
@@ -166,11 +171,11 @@ text(s, Inches(0.9), Inches(6.85), Inches(11.53), Inches(0.4), [
 # ============ 2. THE PROBLEM ============
 s = slide()
 furniture(s, "The Problem", 2)
-headline(s, "Club Events Run on Chaos")
+headline(s, "Nobody Keeps the Score")
 rows = [
-    ("The plan lives in a doc.", "The invite lives on Luma. The supplies sit in an Amazon cart. The food is a group chat."),
-    ("Officers cook for free.", "Thin budgets, campus rooms, volunteer labor — the same scramble, every single event."),
-    ("AI tools don’t help.", "They either just chat about the work — or worse, send & spend without asking."),
+    ("Nobody knows what worked.", "The event ends, the group chat moves on, & the spreadsheet of who showed up never happens."),
+    ("The next event starts from zero.", "No attendance history, no cost records, no follow-up list — every officer re-learns the same lessons."),
+    ("AI tools don’t help.", "They chat about the work, or send & spend without asking. None of them count anything."),
 ]
 top = Inches(2.5)
 for i, (h, b) in enumerate(rows):
@@ -186,15 +191,15 @@ for i, (h, b) in enumerate(rows):
 # ============ 3. WHAT COOK IS ============
 s = slide()
 furniture(s, "What COOK Is", 3)
-headline(s, "One Kitchen. One Pass.")
+headline(s, "Run the Event. Keep the Score.", size=46)
 cards = [
     ("The Pass", "Every event, task, run-of-show & partner in one place — scoped to your club, shared by your officers."),
     ("The Kitchen Staff", "AI skills prep the work: task lists, outreach drafts, supply carts, food runs. You stay on the pass."),
-    ("The Stamp", "Nothing sends, publishes, or charges without your explicit yes. Every single time."),
+    ("The Scorecard", "Every event records its numbers — turnout, spend, replies, follow-through — and feeds them forward."),
 ]
 cw, ch = Inches(3.68), Inches(3.1)
 gap = Inches(0.25)
-top = Inches(2.6)
+top = Inches(2.55)
 for i, (h, b) in enumerate(cards):
     l = Inches(0.9) + (cw + gap) * i
     card(s, l, top, cw, ch)
@@ -202,27 +207,27 @@ for i, (h, b) in enumerate(cards):
         {"runs": [R(h, 22, FLAME, italic=True, font=DISPLAY)], "after": 10},
         {"runs": [R(b, 14.5, INK)], "line": 1.25},
     ])
-text(s, Inches(0.9), Inches(6.25), Inches(11.53), Inches(0.8), [
+text(s, Inches(0.9), Inches(6.2), Inches(11.53), Inches(0.8), [
     {"runs": [
         R("Not a social app. Not five chatbots. ", 16, MUTED),
-        R("One spine, skills on the side.", 16, INK, bold=True),
+        R("One spine, skills on the side, numbers on the record.", 16, INK, bold=True),
     ]}
 ])
 
-# ============ 4. THE APP ============
+# ============ 4. WHAT GETS MEASURED ============
 s = slide()
-furniture(s, "The App", 4)
-headline(s, "Tonight’s Service, at a Glance")
-cards = [
-    ("Home Digest", "This week’s events, open tasks & pending drafts — the moment you open the app."),
-    ("Event Page", "Brief, task list & run-of-show on one screen. No tab-switching mid-crunch."),
-    ("Approvals Queue", "Every outreach draft waits here: draft, awaiting approval, sent. Nothing sends itself."),
-    ("Guest Snapshot", "Partners, contacts, attendance & follow-ups — the next event starts smarter."),
+furniture(s, "What Gets Measured", 4)
+headline(s, "What Gets Measured")
+stats = [
+    ("Show-up rate", "RSVPs vs. actual check-ins — the number every club argues about, settled."),
+    ("Cost per head", "Supplies & food, divided by who came. Budgets stop being guesses."),
+    ("Reply rate", "Outreach answered vs. sent — which partners & channels actually respond."),
+    ("Follow-through", "Post-event tasks closed vs. opened. The debrief that actually happens."),
 ]
 cw, ch = Inches(5.63), Inches(1.62)
 gap = Inches(0.27)
 top = Inches(2.6)
-for i, (h, b) in enumerate(cards):
+for i, (h, b) in enumerate(cards := stats):
     l = Inches(0.9) + (cw + gap) * (i % 2)
     t = top + (ch + gap) * (i // 2)
     card(s, l, t, cw, ch)
@@ -230,18 +235,24 @@ for i, (h, b) in enumerate(cards):
         {"runs": [R(h, 18, INK, bold=True)], "after": 4},
         {"runs": [R(b, 13.5, MUTED)], "line": 1.2},
     ])
+text(s, Inches(0.9), Inches(6.35), Inches(11.53), Inches(0.6), [
+    {"runs": [
+        R("No PII in the numbers. ", 15, INK, bold=True),
+        R("Counts & rates, never names — attendance, not surveillance.", 15, MUTED),
+    ]}
+])
 
 # ============ 5. THE SKILLS ============
 s = slide()
 furniture(s, "The Skills", 5)
-headline(s, "A Prep Cook for Every Station", size=46)
+headline(s, "Every Station Feeds the Score", size=46)
 rows = [
-    ("Plan Club Event", "Concept, budget & run-of-show — then a lock gate before anyone spends a dollar."),
-    ("Luma Event Invite", "Learns your club’s vibes, colors & voice first. Drafts the invite. Never publishes."),
-    ("Amazon Event Supplies", "Only quality passes: 500+ reviews, 4.6+ stars, arrives 2+ days early. Stops before checkout."),
-    ("Event Food Order", "Any vendor you pick. Order sheet, runner logistics, reimbursement — out of the supplies cart."),
-    ("Personal Daily Brief", "Reads your Notion, calendar & email each morning: what’s on, what’s waiting, a plan. Read-only."),
-    ("Ops · Outreach · Metrics", "In-app helpers for task breakdowns, drafts to the Approvals queue & post-event follow-ups."),
+    ("Plan Club Event", "Sets targets up front: headcount, budget, capacity. You can’t beat a number you never set."),
+    ("Luma Event Invite", "The draft invite is where RSVP tracking starts — signups flow back into the record."),
+    ("Amazon Event Supplies", "500+ reviews, 4.6+ stars, arrives 2+ days early — quality bars you can audit, with the spend logged."),
+    ("Event Food Order", "Order sheet, runner logistics, receipt — cost per head falls out of the paperwork."),
+    ("Metrics & Follow-Ups", "Reads the event’s records after the fact: what hit target, what slipped, who to thank."),
+    ("Personal Daily Brief", "Each morning: what’s on, what’s waiting on you, what’s overdue — your own follow-through, counted."),
 ]
 top = Inches(2.35)
 col_w = Inches(5.63)
@@ -253,17 +264,17 @@ for i, (h, b) in enumerate(rows):
         {"runs": [R(b, 12.5, MUTED)], "line": 1.18},
     ])
 
-# ============ 6. THE FLOW ============
+# ============ 6. THE LOOP ============
 s = slide()
-furniture(s, "The Flow", 6)
-headline(s, "First Spark to Last Plate")
+furniture(s, "The Loop", 6)
+headline(s, "Every Event Sharpens the Next", size=46)
 steps = [
-    ("Plan", "Concept, budget & run-of-show come together — then everything locks: date, headcount, budget."),
-    ("Invite", "The Luma draft is built from your club’s look & voice, shown to you, and held."),
-    ("Order", "Supplies verified against the quality bar; the food run planned separately. Both stop before payment."),
-    ("Serve & Debrief", "The day-of checklist runs the night; attendance & follow-ups feed the next event."),
+    ("Set targets", "Headcount, budget & capacity lock in at the plan stage — before anyone spends a dollar."),
+    ("Run the night", "Check-ins, spend & outreach land in the record as the event happens, not after from memory."),
+    ("Read the score", "Show-up rate, cost per head, reply rate — against the targets you set in step 1."),
+    ("Feed it forward", "Follow-ups go out, lessons attach to the next plan, targets adjust. The loop closes."),
 ]
-top = Inches(2.6)
+top = Inches(2.55)
 row_h = Inches(1.08)
 for i, (h, b) in enumerate(steps):
     t = top + row_h * i
@@ -281,19 +292,17 @@ stamp(s, Inches(10.55), Inches(1.15), rot=7, w=Inches(2.15), h=Inches(0.56), siz
 # ============ 7. SAFETY ============
 s = slide()
 furniture(s, "Safety", 7)
-headline(s, [
-    R("Nothing Leaves the Kitchen", 46, INK, italic=True, font=DISPLAY),
-], size=46)
-text(s, Inches(0.9), Inches(2.0), Inches(11.53), Inches(0.9), [
+headline(s, [R("Nothing Leaves the Kitchen", 46, INK, italic=True, font=DISPLAY)], size=46)
+text(s, Inches(0.9), Inches(1.95), Inches(11.53), Inches(0.9), [
     {"runs": [R("without your stamp.", 46, FLAME, italic=True, font=DISPLAY)]}
 ])
 rows = [
     ("Approve-before-send, everywhere", "invites, outreach, orders & edits each pause for an explicit yes — per action, not per session."),
     ("Dry-run safe by default", "demo mode builds full carts & drafts without ever paying, publishing, or sending."),
-    ("Every claim shows its source", "briefings tag each item — calendar, Notion, or email — so you can verify in two clicks."),
-    ("Skills are plain files", "each skill is one readable document. Review it, copy it, hand it to another agent."),
+    ("Every number shows its source", "each metric traces to the record it came from — verify any claim in two clicks."),
+    ("Counts, not people", "attendance & rates only. No names, no message bodies, no PII in the numbers."),
 ]
-top = Inches(3.0)
+top = Inches(2.95)
 for i, (h, b) in enumerate(rows):
     t = top + Inches(0.92) * i
     text(s, Inches(0.9), t, Inches(0.5), Inches(0.5), [
@@ -302,43 +311,34 @@ for i, (h, b) in enumerate(rows):
     text(s, Inches(1.55), t, Inches(8.6), Inches(0.9), [
         {"runs": [R(h + " — ", 15.5, INK, bold=True), R(b, 13.5, MUTED)], "line": 1.15},
     ])
-stamp(s, Inches(10.35), Inches(3.7), rot=-9, w=Inches(2.5), h=Inches(0.62), size=12)
-stamp(s, Inches(10.7), Inches(4.85), rot=5, w=Inches(2.1), h=Inches(0.56), size=11, label="HUMAN SAYS YES")
+stamp(s, Inches(10.35), Inches(3.65), rot=-9, w=Inches(2.5), h=Inches(0.62), size=12)
+stamp(s, Inches(10.7), Inches(4.8), rot=5, w=Inches(2.1), h=Inches(0.56), size=11, label="HUMAN SAYS YES")
 
 # ============ 8. WHERE WE ARE ============
 s = slide()
 furniture(s, "Where We Are", 8)
-headline(s, "Serving Tonight")
+headline(s, "Keeping Score Tonight")
+bignum(s, Inches(0.9), Inches(2.45), "8", "skills written & ready — plan, invite, supplies, food, metrics, brief & more", num_size=72)
+bignum(s, Inches(4.85), Inches(2.45), "1", "queue every draft, cart & invite must pass through before anything happens", num_size=72)
+bignum(s, Inches(8.8), Inches(2.45), "0", "messages sent, orders placed, or invites published without a human yes", num_size=72)
+hairline(s, Inches(0.9), Inches(4.6), Inches(11.53))
 cols = [
-    ("On the Pass", INK, [
-        "Full event management: tasks, run-of-show, partners",
-        "The Approvals queue, working end to end",
-        "A seeded demo night, ready to walk through",
-    ]),
-    ("Still Prepping", MUTED, [
-        "AI skills answer with placeholders today",
-        "Sign-in is a demo shortcut, not real accounts",
-        "Approving a draft doesn’t send it yet",
-    ]),
-    ("Next Up", FLAME, [
-        "Plug a real model into the skills",
-        "Real accounts & per-club permissions",
-        "Approved drafts actually send",
-    ]),
+    ("On the Pass", INK, "Full event management, the Approvals queue & a seeded demo night — ready to walk through now."),
+    ("Still Prepping", MUTED, "AI skills answer with placeholders today; sign-in is a demo shortcut; approved drafts don’t send yet."),
+    ("Next Up", FLAME, "A real model behind the skills, real accounts & per-club permissions, and live sending on approval."),
 ]
-cw, ch = Inches(3.68), Inches(3.6)
+cw = Inches(3.68)
 gap = Inches(0.25)
-top = Inches(2.6)
-for i, (h, hc, items) in enumerate(cols):
+top = Inches(4.85)
+for i, (h, hc, b) in enumerate(cols):
     l = Inches(0.9) + (cw + gap) * i
-    card(s, l, top, cw, ch)
-    lines = [{"runs": [R(h, 20, hc, italic=True, font=DISPLAY)], "after": 12}]
-    for it in items:
-        lines.append({"runs": [R("—  ", 13, FLAME, bold=True), R(it, 13, INK if i != 1 else MUTED)], "after": 10, "line": 1.15})
-    text(s, l + Inches(0.32), top + Inches(0.32), cw - Inches(0.64), ch - Inches(0.6), lines)
-text(s, Inches(0.9), Inches(6.5), Inches(11.53), Inches(0.6), [
+    text(s, l, top, cw, Inches(1.7), [
+        {"runs": [R(h, 18, hc, italic=True, font=DISPLAY)], "after": 6},
+        {"runs": [R(b, 12.5, INK if i != 1 else MUTED)], "line": 1.2},
+    ])
+text(s, Inches(0.9), Inches(6.6), Inches(11.53), Inches(0.6), [
     {"runs": [
-        R("The skills are already written. ", 17, INK, italic=True, font=DISPLAY),
+        R("The scoreboard is built. ", 17, INK, italic=True, font=DISPLAY),
         R("We’re just firing the burners" + ELL, 17, FLAME, italic=True, font=DISPLAY),
     ], "align": PP_ALIGN.CENTER}
 ])
