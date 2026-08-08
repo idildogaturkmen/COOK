@@ -19,7 +19,7 @@ If login is required to see delivery dates, hand the user the box for sign-in, t
 ## Process
 1. Confirm event date + ship-to context with the user.
 2. Build a categorized shopping list from the event plan (e.g. matcha cafe: matcha, milk, frother, cups, lids, napkins, stir sticks, stickers, sharpies, trash bags, syrup/honey).
-3. For each line item: search Amazon → open candidates → verify the three filters → add the best passing option.
+3. For each line item: search Amazon → open candidates → verify reviews + delivery filters → pick the best option using the tiered rating (prefer 4.6, then 4.5, then 4.4) → add to cart.
 4. Remove anything already in cart that fails the filters.
 5. Open the cart, screenshot it, and report a table: title, URL/ASIN, stars, review count, rating tier used, delivery date, price.
 6. **Stop before checkout.** Only continue to order if the user explicitly says to pay.
