@@ -1,9 +1,6 @@
 import { NextResponse } from "next/server";
-import {
-  type AiRequest,
-  type AiRole,
-  buildStubResponse,
-} from "@/lib/ai/types";
+import { runSkill } from "@/lib/ai/router";
+import { type AiRequest, type AiRole } from "@/lib/ai/types";
 
 const VALID_ROLES: AiRole[] = ["ops", "outreach", "metrics", "manager"];
 
@@ -41,7 +38,15 @@ export async function POST(request: Request) {
   }
 
   const aiRequest: AiRequest = { role, eventId, input: input.trim() };
-  const response = buildStubResponse(aiRequest);
 
-  return NextResponse.json(response);
+  try {
+    const outcome = await runSkill(aiRequest);
+    if (!outcome.ok) {
+      return NextResponse.json({ error: outcome.error }, { status: outcome.status });
+    }
+    return NextResponse.json(outcome.response);
+  } catch (error) {
+    console.error("[/api/ai] skill failed", error);
+    return NextResponse.json({ error: "Skill handler failed" }, { status: 500 });
+  }
 }
