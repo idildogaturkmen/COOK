@@ -7,11 +7,12 @@ description: Use for full college club event ops — plan + invite draft, lock g
 
 Run these in order; do not skip the lock gate.
 
-1. Run **Plan club event** → concept + invite draft (no publish).
-2. Wait for explicit lock: final date, headcount, budget.
-3. Run **Amazon event supplies** with filters: **>500 reviews**, **≥4.6 stars**, **delivery ≥2 days before event**. Cart only until approval.
-4. Run **In-N-Out event order** (or local equivalent) as a separate food plan.
-5. Day-of checklist from the plan skill.
+1. Run **Plan club event** → concept + invite copy draft.
+2. Run **Luma event invite** → fill draft in browser (no publish without yes).
+3. Wait for explicit lock: final date, headcount, budget.
+4. Run **Amazon event supplies** with filters: **>500 reviews**, **≥4.6 stars**, **delivery ≥2 days before event**. Cart only until approval.
+5. Run **In-N-Out event order** (or local equivalent) as a separate food plan.
+6. Day-of checklist from the plan skill.
 
 ## Cross-account reuse
 These skills are plain `SKILL.md` files. Copy the `skills/` tree into another Grok Bot / Cursor account or consume from this GitHub repo so every agent follows the same bars.

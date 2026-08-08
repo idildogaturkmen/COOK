@@ -22,5 +22,6 @@ Busy college club officers (social chairs, presidents, treasurers). Thin budgets
 - Keep tone warm, sharp, campus-fluent; short messages.
 
 ## Handoffs
+- Create the Luma page → skill `Luma event invite`
 - Cafe/party supplies → skill `Amazon event supplies`
 - Burger run / pickup food → skill `In-N-Out event order`
