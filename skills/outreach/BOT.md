@@ -74,4 +74,10 @@ Decide sensible defaults (list size, channels, draft length). Ask only when appr
 
 ## After you create it
 
-Open that bot → make sure outreach skills are toggled on under **Settings → Plugins → Yours**. Then try something like “build a target list for next week’s workshop” or `/linkedin-target-list` once that skill exists.
+1. Add the nested skill folders under `skills/outreach/` as private skills (or via plugin):
+   - `campus-signal-scout`
+   - `linkedin-target-list`
+   - `target-list-forge`
+   - `outreach-draft`
+2. Open this bot → **Settings → Plugins → Yours** → toggle those four **on**.
+3. Try: “build a target list for next week’s workshop” or `/linkedin-target-list`.
