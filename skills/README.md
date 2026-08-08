@@ -40,7 +40,42 @@ churn. Do not rename the role.
 Every live handler returns `stub: false` and needs **no API key** — v1 handlers
 fill templates from Prisma data, so demos and offline development work.
 
+## Club event / RSVP skills
+
+Reusable Cursor / Grok Bot skills for college club event planning (standalone from the `/api/ai` roles above):
+
+| Skill | Folder | Responsibility |
+|-------|--------|----------------|
+| Plan club event | `skills/plan-club-event/` | Intake (ZIP + Luma creative inputs), concept, budget, run-of-show, Amazon-vs-local note, lock gates |
+| Luma event invite | `skills/luma-event-invite/` | Collect vibes, brand assets, and language **before** opening Luma; one browser pass; screenshot; stop before Publish |
+| Amazon event supplies | `skills/amazon-event-supplies/` | Headcount + ZIP quantity math (1.3–1.5× buffer); tiered ratings; ASIN shortlist; Amazon vs local split; dry-run safe |
+| Event food order | `skills/event-food-order/` | Any vendor; headcount + ~10% buffer; dietary split; cost estimate before pay — separate from Amazon cart |
+| In-N-Out event order | `skills/innout-event-order/` | **Deprecated alias** → use Event food order |
+| RSVP club loop | `skills/rsvp-club-loop/` | End-to-end orchestration: plan → Luma → lock (incl. ZIP) → Amazon → food → day-of |
+
+Typical flow:
+
+1. **Plan** the event (concept, budget, run-of-show, ZIP, vibes/brand/language intake)
+2. **Luma invite** via `luma-event-invite` — creative inputs first, one browser pass, screenshot, no publish without yes
+3. **Lock** final date, headcount, budget, and ZIP
+4. **Amazon supplies** — quantity math, tiered ratings (>500 reviews, ≥4.6/4.5/4.4), delivery ≥2 days to ZIP; durables on Amazon, milk/ice local
+5. **Food order** — user picks vendor; ~10% buffer, dietary split, cost estimate before pay — never mixed into the Amazon cart
+6. **Day-of** checklist from the plan skill
+
+### Install on another account
+
+Copy the skill folders under `skills/` into that agent's workflows / skills directory, or add this repo as the shared skills source your team uses. Each `SKILL.md` is self-contained.
+
+### Demo defaults (Cursor Build Night)
+
+- Fun "matcha cafe" station the organizer runs themselves
+- User-chosen food vendor via Event food order (no default restaurant)
+- **DEMO / dry-run safe:** never publish invites or checkout without explicit approval
+
 ## Getting started for skill authors
+
+For the `/api/ai` roles at the top of this file. The standalone Grok Bot skills
+above are installed per bot instead — see `skills/outreach/HOW-SKILLS-WORK.md`.
 
 1. **Clone and run the app.**
 
@@ -116,4 +151,5 @@ fill templates from Prisma data, so demos and offline development work.
 
 ## Demo
 
-`docs/DEMO.md` is the recording script: Home → Ops → Outreach → Approvals → AFTERS.
+- `docs/DEMO.md` — click-through recording script: Home → Ops → Outreach → Approvals → AFTERS.
+- `docs/cook-demo.pptx` — the pitch deck (rebuild it with `docs/make_demo_deck.py`).
