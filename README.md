@@ -4,7 +4,7 @@ Event operations for college club officers: plan an event, run it, and close it 
 
 **Not** a social campus app. **Not** five chatbots. One app spine + skill contracts.
 
-Recording a demo? `docs/DEMO.md` is the click-through script. Presenting Cursor itself on stage? `docs/DEMO-IDEA-REPO-RESCUE-LIVE.md` is the live audience-bug-raid format.
+Recording a demo? `docs/DEMO.md` is the click-through script. Presenting Cursor itself on stage? `docs/DEMO-IDEA-LIVE-IN-PROD.md` is the standalone stage-demo concept.
 
 ## Quick start
 
