@@ -5,6 +5,7 @@ import { OpsAssist } from "@/components/assist/ops-assist";
 import { OutreachAssist } from "@/components/assist/outreach-assist";
 import { AssistHeader } from "@/components/assist/ui";
 import { Card } from "@/components/card";
+import { Chip } from "@/components/chip";
 import { PageHeader } from "@/components/page-header";
 import {
   createFollowUp,
@@ -40,12 +41,12 @@ const statusLabel: Record<string, string> = {
   DONE: "Done",
 };
 
-const eventStatusStyle: Record<string, string> = {
-  PLANNING: "bg-zinc-100 text-zinc-700 dark:bg-zinc-800 dark:text-zinc-300",
-  CONFIRMED: "bg-blue-100 text-blue-800 dark:bg-blue-900/40 dark:text-blue-200",
-  COMPLETED: "bg-green-100 text-green-800 dark:bg-green-900/40 dark:text-green-200",
-  CANCELLED: "bg-red-100 text-red-800 dark:bg-red-900/40 dark:text-red-200",
-};
+const eventStatusTone = {
+  PLANNING: "zinc",
+  CONFIRMED: "blue",
+  COMPLETED: "green",
+  CANCELLED: "red",
+} as const;
 
 const jumpLinks = [
   { href: "#tasks", label: "Tasks" },
@@ -82,6 +83,7 @@ export default async function EventDetailPage({ params }: EventPageProps) {
   const createFollowUpAction = createFollowUp.bind(null, event.id);
 
   const openFollowUps = event.followUps.filter((f) => !f.completed).length;
+  const openTasks = event.tasks.filter((t) => t.status !== "DONE").length;
 
   return (
     <>
@@ -103,22 +105,23 @@ export default async function EventDetailPage({ params }: EventPageProps) {
         </Link>
       </PageHeader>
 
-      <div className="mb-6 flex flex-wrap items-center gap-2">
-        <span
-          className={`rounded-full px-2.5 py-0.5 text-xs font-medium ${eventStatusStyle[event.status]}`}
-        >
-          {event.status.toLowerCase()}
-        </span>
-        <span className="text-xs text-zinc-500">
-          {event.tasks.filter((t) => t.status !== "DONE").length} open tasks ·{" "}
-          {event.metrics.length} metrics · {openFollowUps} open follow-ups
-        </span>
-        <nav aria-label="Jump to section" className="ml-auto flex flex-wrap gap-1.5">
+      <div className="mb-6 flex flex-col gap-3 border-y border-zinc-200 py-3 sm:flex-row sm:items-center sm:justify-between dark:border-zinc-800">
+        <div className="flex flex-wrap items-center gap-2">
+          <Chip tone={eventStatusTone[event.status]} dot>
+            {event.status.toLowerCase()}
+          </Chip>
+          <Chip>{openTasks} open tasks</Chip>
+          <Chip>{event.metrics.length} metrics</Chip>
+          <Chip tone={openFollowUps > 0 ? "amber" : "zinc"}>
+            {openFollowUps} open follow-ups
+          </Chip>
+        </div>
+        <nav aria-label="Jump to section" className="flex flex-wrap gap-1.5">
           {jumpLinks.map((link) => (
             <a
               key={link.href}
               href={link.href}
-              className="rounded-full border border-zinc-200 px-2.5 py-1 text-xs text-zinc-600 transition hover:border-zinc-300 hover:bg-zinc-100 dark:border-zinc-800 dark:text-zinc-400 dark:hover:bg-zinc-800"
+              className="rounded-full border border-zinc-200 px-2.5 py-1 text-xs text-zinc-600 transition hover:border-zinc-400 hover:bg-zinc-100 hover:text-zinc-900 dark:border-zinc-800 dark:text-zinc-400 dark:hover:bg-zinc-800 dark:hover:text-zinc-100"
             >
               {link.label}
             </a>
@@ -244,23 +247,35 @@ export default async function EventDetailPage({ params }: EventPageProps) {
           </div>
         </Card>
 
+        <div className="flex items-center gap-3 pt-2">
+          <h2 className="text-sm font-semibold uppercase tracking-wide text-zinc-500">Skills</h2>
+          <span aria-hidden className="h-px flex-1 bg-zinc-200 dark:bg-zinc-800" />
+          <span className="text-xs text-zinc-500 dark:text-zinc-400">
+            Preview → confirm → save
+          </span>
+        </div>
+
         <OpsAssist eventId={event.id} />
 
         <OutreachAssist eventId={event.id} />
 
-        <Card className="border-zinc-300 shadow-sm dark:border-zinc-700">
+        <Card className="border-amber-200 shadow-sm dark:border-amber-900/50">
           <div id="afters" className="scroll-mt-24">
             <AssistHeader
-              eyebrow="Skill · metrics"
+              accent="amber"
+              role="metrics"
               title="AFTERS"
-              subtitle="After-event metrics, follow-ups, and debrief."
+              helper="After-event metrics, follow-ups, and the debrief. Log numbers by hand, or generate a package and apply what you want."
               badge="Confirm before save"
             />
 
             <div className="grid gap-6 lg:grid-cols-2">
               <div>
-                <h3 className="mb-2 text-xs font-semibold uppercase tracking-wide text-zinc-500">
+                <h3 className="mb-2 flex items-baseline justify-between text-xs font-semibold uppercase tracking-wide text-zinc-500">
                   Metrics
+                  <span className="font-normal normal-case tracking-normal text-zinc-400">
+                    {event.metrics.length} logged
+                  </span>
                 </h3>
                 {event.metrics.length > 0 ? (
                   <ul className="mb-3 divide-y divide-zinc-100 dark:divide-zinc-800">
@@ -284,10 +299,12 @@ export default async function EventDetailPage({ params }: EventPageProps) {
                     ))}
                   </ul>
                 ) : (
-                  <p className="mb-3 rounded-md border border-dashed border-zinc-300 px-3 py-4 text-sm text-zinc-600 dark:border-zinc-700 dark:text-zinc-400">
-                    Start with one number: how many people showed up? Everything else reads against
-                    attendance.
-                  </p>
+                  <div className="mb-3 rounded-lg border border-dashed border-zinc-300 px-4 py-5 text-sm dark:border-zinc-700">
+                    <p className="font-medium">Start with one number.</p>
+                    <p className="mt-1 text-zinc-600 dark:text-zinc-400">
+                      How many people showed up? Everything else reads against attendance.
+                    </p>
+                  </div>
                 )}
 
                 <form action={createMetricAction} className="grid grid-cols-2 gap-2 sm:grid-cols-6">
@@ -328,8 +345,11 @@ export default async function EventDetailPage({ params }: EventPageProps) {
               </div>
 
               <div>
-                <h3 className="mb-2 text-xs font-semibold uppercase tracking-wide text-zinc-500">
+                <h3 className="mb-2 flex items-baseline justify-between text-xs font-semibold uppercase tracking-wide text-zinc-500">
                   Follow-ups
+                  <span className="font-normal normal-case tracking-normal text-zinc-400">
+                    {openFollowUps} open
+                  </span>
                 </h3>
                 {event.followUps.length > 0 ? (
                   <ul className="mb-3 divide-y divide-zinc-100 dark:divide-zinc-800">
@@ -367,10 +387,13 @@ export default async function EventDetailPage({ params }: EventPageProps) {
                     ))}
                   </ul>
                 ) : (
-                  <p className="mb-3 rounded-md border border-dashed border-zinc-300 px-3 py-4 text-sm text-zinc-600 dark:border-zinc-700 dark:text-zinc-400">
-                    No follow-ups yet. The classic three: thank-you in 48 hours, survey recap at one
-                    week, re-invite at one month.
-                  </p>
+                  <div className="mb-3 rounded-lg border border-dashed border-zinc-300 px-4 py-5 text-sm dark:border-zinc-700">
+                    <p className="font-medium">No follow-ups yet.</p>
+                    <p className="mt-1 text-zinc-600 dark:text-zinc-400">
+                      The classic three: thank-you in 48 hours, survey recap at one week, re-invite
+                      at one month.
+                    </p>
+                  </div>
                 )}
 
                 <form action={createFollowUpAction} className="grid grid-cols-2 gap-2 sm:grid-cols-6">

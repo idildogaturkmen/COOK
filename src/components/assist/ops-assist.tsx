@@ -3,6 +3,7 @@
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import {
+  ApplyButton,
   AssistHeader,
   BulletList,
   CheckRow,
@@ -10,9 +11,9 @@ import {
   GenerateButton,
   PreviewSection,
   PreviewShell,
-  ResultBanner,
-  SecondaryButton,
+  QuietButton,
 } from "@/components/assist/ui";
+import { ResultBanner } from "@/components/assist/ui";
 import { useAssist } from "@/components/assist/use-assist";
 import { Card } from "@/components/card";
 import { applyOps } from "@/lib/actions/assist";
@@ -78,20 +79,16 @@ export function OpsAssist({ eventId }: { eventId: string }) {
     <Card>
       <div id="ops-assist" className="scroll-mt-24">
         <AssistHeader
-          eyebrow="Skill · ops"
+          accent="blue"
+          role="ops"
           title="Ops Assist"
-          subtitle="Finds missing prep tasks and run-of-show gaps before the doors open."
+          helper="Checks this event against a standard club checklist and shows what is missing."
           badge="Deterministic · no API key"
         />
 
-        <div className="flex flex-wrap items-center gap-3">
-          <GenerateButton onClick={handleGenerate} loading={phase === "loading"} loadingLabel="Checking…">
-            🔎 Check event readiness
-          </GenerateButton>
-          <p className="text-xs text-zinc-500 dark:text-zinc-400">
-            Compares your event against a standard club checklist. You pick what to add.
-          </p>
-        </div>
+        <GenerateButton onClick={handleGenerate} loading={phase === "loading"} loadingLabel="Checking…">
+          🔎 Suggest tasks
+        </GenerateButton>
 
         {phase === "error" && error ? <ErrorBanner message={error} /> : null}
         {phase === "done" && result ? <ResultBanner message={result} onDone={dismiss} /> : null}
@@ -101,20 +98,19 @@ export function OpsAssist({ eventId }: { eventId: string }) {
             summary={response.summary}
             footer={
               <>
-                <button
-                  type="button"
+                <ApplyButton
                   onClick={handleApply}
+                  saving={phase === "applying"}
                   disabled={phase === "applying" || selectedCount === 0}
-                  className="rounded-md bg-zinc-900 px-4 py-2 text-sm font-medium text-white transition hover:bg-zinc-800 disabled:cursor-not-allowed disabled:opacity-50 dark:bg-zinc-100 dark:text-zinc-900"
                 >
-                  {phase === "applying" ? "Saving…" : `Apply selected (${selectedCount})`}
-                </button>
-                <SecondaryButton onClick={selectAll} disabled={phase === "applying"}>
+                  {`Apply selected (${selectedCount})`}
+                </ApplyButton>
+                <QuietButton onClick={selectAll} disabled={phase === "applying"}>
                   Select all
-                </SecondaryButton>
-                <SecondaryButton onClick={dismiss} disabled={phase === "applying"}>
-                  Dismiss
-                </SecondaryButton>
+                </QuietButton>
+                <QuietButton onClick={dismiss} disabled={phase === "applying"}>
+                  Cancel
+                </QuietButton>
               </>
             }
           >

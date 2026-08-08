@@ -1,25 +1,13 @@
 import Link from "next/link";
 import { Card } from "@/components/card";
+import { Chip } from "@/components/chip";
 import { PageHeader } from "@/components/page-header";
 import { createEvent, createWorkspace } from "@/lib/actions/crud";
 import { db } from "@/lib/db";
 import { getActiveWorkspaceId } from "@/lib/workspace";
 
-function startOfWeek(date: Date): Date {
-  const d = new Date(date);
-  const day = d.getDay();
-  const diff = d.getDate() - day + (day === 0 ? -6 : 1);
-  d.setDate(diff);
-  d.setHours(0, 0, 0, 0);
-  return d;
-}
-
-function endOfWeek(date: Date): Date {
-  const start = startOfWeek(date);
-  const end = new Date(start);
-  end.setDate(end.getDate() + 7);
-  return end;
-}
+/** How far ahead the digest looks. A Monday-to-Sunday cut hides events 4 days out. */
+const HORIZON_DAYS = 14;
 
 function formatEventDate(date: Date): string {
   return date.toLocaleString(undefined, {
@@ -36,18 +24,20 @@ const skills = [
   {
     role: "ops",
     name: "Ops Assist",
-    tagline: "Missing prep tasks and run-of-show gaps",
+    tagline: "Spots missing prep tasks and run-of-show gaps",
     anchor: "#ops-assist",
     accent: "text-blue-700 dark:text-blue-300",
-    ring: "hover:border-blue-300 dark:hover:border-blue-800",
+    bar: "bg-blue-500",
+    border: "hover:border-blue-300 dark:hover:border-blue-800",
   },
   {
     role: "outreach",
     name: "Outreach Assist",
-    tagline: "Slack posts and partner emails → Approvals",
+    tagline: "Drafts the Slack post or partner email → Approvals",
     anchor: "#outreach-assist",
     accent: "text-violet-700 dark:text-violet-300",
-    ring: "hover:border-violet-300 dark:hover:border-violet-800",
+    bar: "bg-violet-500",
+    border: "hover:border-violet-300 dark:hover:border-violet-800",
   },
   {
     role: "metrics",
@@ -55,15 +45,17 @@ const skills = [
     tagline: "Metrics, follow-ups, and the post-event debrief",
     anchor: "#afters",
     accent: "text-amber-700 dark:text-amber-300",
-    ring: "hover:border-amber-300 dark:hover:border-amber-800",
+    bar: "bg-amber-500",
+    border: "hover:border-amber-300 dark:hover:border-amber-800",
   },
   {
     role: "manager",
     name: "Manager",
     tagline: "Routes one request to the right skill",
     anchor: "",
-    accent: "text-zinc-700 dark:text-zinc-300",
-    ring: "hover:border-zinc-300 dark:hover:border-zinc-700",
+    accent: "text-zinc-800 dark:text-zinc-200",
+    bar: "bg-zinc-400",
+    border: "hover:border-zinc-300 dark:hover:border-zinc-600",
   },
 ] as const;
 
@@ -74,14 +66,14 @@ export default async function HomePage() {
     : null;
 
   const now = new Date();
-  const weekStart = startOfWeek(now);
-  const weekEnd = endOfWeek(now);
+  const windowStart = new Date(now.getTime() - 12 * 60 * 60 * 1000);
+  const windowEnd = new Date(now.getTime() + HORIZON_DAYS * 24 * 60 * 60 * 1000);
 
   const events = workspaceId
     ? await db.event.findMany({
         where: {
           workspaceId,
-          startsAt: { gte: weekStart, lt: weekEnd },
+          startsAt: { gte: windowStart, lt: windowEnd },
         },
         orderBy: { startsAt: "asc" },
         include: {
@@ -91,7 +83,7 @@ export default async function HomePage() {
       })
     : [];
 
-  /** Event the skill strip points at: this week first, else the closest one. */
+  /** Event the skills strip points at: the next one up, else the most recent. */
   const focusEvent =
     events[0] ??
     (workspaceId
@@ -133,9 +125,9 @@ export default async function HomePage() {
         {focusEvent ? (
           <Link
             href={`/events/${focusEvent.id}`}
-            className="rounded-md bg-zinc-900 px-3 py-1.5 text-sm font-medium text-white hover:bg-zinc-800 dark:bg-zinc-100 dark:text-zinc-900"
+            className="rounded-lg bg-zinc-900 px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-zinc-800 dark:bg-zinc-100 dark:text-zinc-900"
           >
-            Open {focusEvent.title.length > 22 ? "event" : focusEvent.title} →
+            Open event →
           </Link>
         ) : null}
       </PageHeader>
@@ -164,12 +156,17 @@ export default async function HomePage() {
         </Card>
       ) : (
         <div className="space-y-6">
-          <Card title="Skills">
-            <p className="mb-4 text-sm text-zinc-600 dark:text-zinc-400">
-              Every skill is one call to <code className="rounded bg-zinc-100 px-1 text-xs dark:bg-zinc-800">POST /api/ai</code>{" "}
-              with a role. Suggestions are previewed in the event page; an officer confirms before
-              anything is saved, and outbound messages always stop at Approvals.
-            </p>
+          <Card>
+            <div className="mb-4 flex flex-col gap-1 sm:flex-row sm:items-baseline sm:justify-between">
+              <h2 className="text-lg font-semibold tracking-tight">Skills</h2>
+              <p className="text-xs text-zinc-500 dark:text-zinc-400">
+                One call to{" "}
+                <code className="rounded bg-zinc-100 px-1 font-mono dark:bg-zinc-800">
+                  POST /api/ai
+                </code>{" "}
+                per role · officer confirms before anything saves
+              </p>
+            </div>
             <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
               {skills.map((skill) => {
                 const href = focusEvent
@@ -179,19 +176,23 @@ export default async function HomePage() {
                   <Link
                     key={skill.role}
                     href={href}
-                    className={`group flex h-full flex-col rounded-lg border border-zinc-200 bg-white p-3 transition hover:shadow-sm dark:border-zinc-800 dark:bg-zinc-950 ${skill.ring}`}
+                    className={`group relative flex h-full flex-col overflow-hidden rounded-lg border border-zinc-200 bg-white p-4 pl-4 transition hover:shadow-md dark:border-zinc-800 dark:bg-zinc-950 ${skill.border}`}
                   >
+                    <span aria-hidden className={`absolute inset-y-0 left-0 w-1 ${skill.bar}`} />
                     <span className="font-mono text-[11px] uppercase tracking-wider text-zinc-400 dark:text-zinc-500">
                       role: {skill.role}
                     </span>
-                    <span className={`mt-1 text-sm font-semibold ${skill.accent}`}>
+                    <span className={`mt-1.5 text-base font-semibold ${skill.accent}`}>
                       {skill.name}
                     </span>
-                    <span className="mt-1 text-xs leading-relaxed text-zinc-600 dark:text-zinc-400">
+                    <span className="mt-1.5 flex-1 text-xs leading-relaxed text-zinc-600 dark:text-zinc-400">
                       {skill.tagline}
                     </span>
-                    <span className="mt-2 text-xs text-zinc-400 group-hover:text-zinc-600 dark:group-hover:text-zinc-300">
-                      Open →
+                    <span className="mt-3 inline-flex items-center gap-1 text-xs font-medium text-zinc-400 transition group-hover:text-zinc-700 dark:group-hover:text-zinc-200">
+                      Open
+                      <span aria-hidden className="transition group-hover:translate-x-0.5">
+                        →
+                      </span>
                     </span>
                   </Link>
                 );
@@ -201,39 +202,60 @@ export default async function HomePage() {
 
           <div className="grid gap-4 sm:grid-cols-3">
             <Card>
-              <p className="text-2xl font-semibold">{events.length}</p>
-              <p className="text-sm text-zinc-600 dark:text-zinc-400">Events this week</p>
+              <p className="text-3xl font-semibold tabular-nums">{events.length}</p>
+              <p className="mt-1 text-sm text-zinc-600 dark:text-zinc-400">
+                Events in the next {HORIZON_DAYS} days
+              </p>
             </Card>
-            <Card>
-              <p className="text-2xl font-semibold">{pendingDrafts}</p>
-              <p className="text-sm text-zinc-600 dark:text-zinc-400">
+            <Link
+              href="/approvals"
+              className="group rounded-lg border border-zinc-200 bg-white p-4 transition hover:border-zinc-300 hover:shadow-sm dark:border-zinc-800 dark:bg-zinc-950 dark:hover:border-zinc-700"
+            >
+              <p className="text-3xl font-semibold tabular-nums">{pendingDrafts}</p>
+              <p className="mt-1 text-sm text-zinc-600 dark:text-zinc-400">
                 Drafts awaiting action{" "}
-                <Link href="/approvals" className="underline">
+                <span
+                  aria-hidden
+                  className="inline-block transition group-hover:translate-x-0.5"
+                >
                   →
-                </Link>
+                </span>
               </p>
-            </Card>
-            <Card>
-              <p className="text-2xl font-semibold">{openFollowUps}</p>
-              <p className="text-sm text-zinc-600 dark:text-zinc-400">
-                Open AFTERS follow-ups
-                {focusEvent ? (
-                  <>
-                    {" "}
-                    <Link href={`/events/${focusEvent.id}#afters`} className="underline">
-                      →
-                    </Link>
-                  </>
-                ) : null}
-              </p>
-            </Card>
+            </Link>
+            {focusEvent ? (
+              <Link
+                href={`/events/${focusEvent.id}#afters`}
+                className="group rounded-lg border border-zinc-200 bg-white p-4 transition hover:border-amber-300 hover:shadow-sm dark:border-zinc-800 dark:bg-zinc-950 dark:hover:border-amber-900/60"
+              >
+                <p className="text-3xl font-semibold tabular-nums">{openFollowUps}</p>
+                <p className="mt-1 text-sm text-zinc-600 dark:text-zinc-400">
+                  Open AFTERS follow-ups{" "}
+                  <span
+                    aria-hidden
+                    className="inline-block transition group-hover:translate-x-0.5"
+                  >
+                    →
+                  </span>
+                </p>
+              </Link>
+            ) : (
+              <Card>
+                <p className="text-3xl font-semibold tabular-nums">{openFollowUps}</p>
+                <p className="mt-1 text-sm text-zinc-600 dark:text-zinc-400">
+                  Open AFTERS follow-ups
+                </p>
+              </Card>
+            )}
           </div>
 
-          <Card title="Events this week">
+          <Card title="Coming up">
             {events.length > 0 ? (
               <ul className="divide-y divide-zinc-100 dark:divide-zinc-800">
                 {events.map((event) => (
-                  <li key={event.id} className="flex items-center justify-between gap-4 py-3">
+                  <li
+                    key={event.id}
+                    className="flex flex-col gap-2 py-3 sm:flex-row sm:items-center sm:justify-between"
+                  >
                     <div className="min-w-0">
                       <Link
                         href={`/events/${event.id}`}
@@ -246,15 +268,16 @@ export default async function HomePage() {
                         {event.location ? ` · ${event.location}` : ""}
                       </p>
                     </div>
-                    <div className="flex shrink-0 items-center gap-3">
-                      <span className="text-xs text-zinc-500">
-                        {event.tasks.length} open tasks · {event._count.metrics} metrics
-                      </span>
+                    <div className="flex shrink-0 items-center gap-2">
+                      <Chip tone={event.tasks.length > 0 ? "amber" : "green"}>
+                        {event.tasks.length} open tasks
+                      </Chip>
+                      <Chip>{event._count.metrics} metrics</Chip>
                       <Link
                         href={`/events/${event.id}#afters`}
-                        className="rounded-full border border-zinc-300 px-2.5 py-1 text-xs text-zinc-700 transition hover:bg-zinc-100 dark:border-zinc-700 dark:text-zinc-300 dark:hover:bg-zinc-800"
+                        className="rounded-full border border-zinc-300 px-2.5 py-1 text-xs font-medium text-zinc-700 transition hover:border-amber-400 hover:bg-amber-50 hover:text-amber-800 dark:border-zinc-700 dark:text-zinc-300 dark:hover:border-amber-800 dark:hover:bg-amber-950/40 dark:hover:text-amber-200"
                       >
-                        AFTERS
+                        AFTERS →
                       </Link>
                     </div>
                   </li>
@@ -263,8 +286,9 @@ export default async function HomePage() {
             ) : (
               <div className="text-sm text-zinc-600 dark:text-zinc-400">
                 <p>
-                  No events scheduled this week. Create one below or run{" "}
-                  <code className="rounded bg-zinc-100 px-1 dark:bg-zinc-800">npm run db:seed</code>.
+                  Nothing scheduled in the next {HORIZON_DAYS} days. Create an event below, or run{" "}
+                  <code className="rounded bg-zinc-100 px-1 dark:bg-zinc-800">npm run db:seed</code>{" "}
+                  for sample data.
                 </p>
                 {focusEvent ? (
                   <p className="mt-2">

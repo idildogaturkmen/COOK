@@ -1,16 +1,17 @@
 import Link from "next/link";
 import { Card } from "@/components/card";
+import { Chip } from "@/components/chip";
 import { PageHeader } from "@/components/page-header";
 import { createDraft, updateDraftStatus } from "@/lib/actions/crud";
 import { db } from "@/lib/db";
 import { getActiveWorkspaceId } from "@/lib/workspace";
 
-const statusColors: Record<string, string> = {
-  DRAFT: "bg-zinc-100 text-zinc-700 dark:bg-zinc-800 dark:text-zinc-300",
-  AWAITING_APPROVAL: "bg-amber-100 text-amber-800 dark:bg-amber-900/40 dark:text-amber-200",
-  SENT: "bg-green-100 text-green-800 dark:bg-green-900/40 dark:text-green-200",
-  REJECTED: "bg-red-100 text-red-800 dark:bg-red-900/40 dark:text-red-200",
-};
+const statusTone = {
+  DRAFT: "zinc",
+  AWAITING_APPROVAL: "amber",
+  SENT: "green",
+  REJECTED: "red",
+} as const;
 
 const statusLabel: Record<string, string> = {
   DRAFT: "Draft",
@@ -66,19 +67,19 @@ export default async function ApprovalsPage() {
       </PageHeader>
 
       {workspaceId ? (
-        <div className="mb-6 flex flex-wrap items-center gap-2 text-xs">
-          <span className="rounded-full bg-amber-100 px-2.5 py-1 font-medium text-amber-800 dark:bg-amber-900/40 dark:text-amber-200">
-            {awaiting} awaiting approval
-          </span>
-          <span className="rounded-full bg-zinc-100 px-2.5 py-1 font-medium text-zinc-700 dark:bg-zinc-800 dark:text-zinc-300">
-            {inDraft} in draft
-          </span>
-          <span className="rounded-full bg-green-100 px-2.5 py-1 font-medium text-green-800 dark:bg-green-900/40 dark:text-green-200">
-            {sent} sent
-          </span>
-          <span className="text-zinc-500 dark:text-zinc-400">
-            Drafts from Outreach Assist and AFTERS land here as “awaiting approval”.
-          </span>
+        <div className="mb-6 flex flex-col gap-2 border-y border-zinc-200 py-3 sm:flex-row sm:items-center sm:justify-between dark:border-zinc-800">
+          <div className="flex flex-wrap items-center gap-2">
+            <Chip tone="amber" dot>
+              {awaiting} awaiting approval
+            </Chip>
+            <Chip dot>{inDraft} in draft</Chip>
+            <Chip tone="green" dot>
+              {sent} sent
+            </Chip>
+          </div>
+          <p className="text-xs text-zinc-500 dark:text-zinc-400">
+            Drafts from Outreach Assist and AFTERS arrive here as “awaiting approval”.
+          </p>
         </div>
       ) : null}
 
@@ -149,17 +150,19 @@ export default async function ApprovalsPage() {
                 {drafts.map((draft) => (
                   <li
                     key={draft.id}
-                    className="rounded-md border border-zinc-200 p-4 dark:border-zinc-800"
+                    className={`rounded-lg border p-4 transition ${
+                      draft.status === "AWAITING_APPROVAL"
+                        ? "border-amber-300 bg-amber-50/40 dark:border-amber-900/60 dark:bg-amber-950/20"
+                        : "border-zinc-200 dark:border-zinc-800"
+                    }`}
                   >
                     <div className="mb-2 flex flex-wrap items-center gap-2">
-                      <span className="text-xs font-medium uppercase text-zinc-500">
-                        {draft.channel}
-                      </span>
-                      <span
-                        className={`rounded-full px-2 py-0.5 text-xs font-medium ${statusColors[draft.status]}`}
-                      >
+                      <Chip tone={draft.channel === "SLACK" ? "violet" : "blue"}>
+                        {draft.channel === "SLACK" ? "# Slack" : "✉ Email"}
+                      </Chip>
+                      <Chip tone={statusTone[draft.status]} dot>
                         {statusLabel[draft.status]}
-                      </span>
+                      </Chip>
                       {draft.event ? (
                         <Link
                           href={`/events/${draft.event.id}`}

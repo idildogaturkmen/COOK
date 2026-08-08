@@ -3,14 +3,15 @@
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import {
+  ApplyButton,
   AssistHeader,
   CheckRow,
   ErrorBanner,
   GenerateButton,
   PreviewSection,
   PreviewShell,
+  QuietButton,
   ResultBanner,
-  SecondaryButton,
 } from "@/components/assist/ui";
 import { useAssist } from "@/components/assist/use-assist";
 import { Card } from "@/components/card";
@@ -79,12 +80,16 @@ export function OutreachAssist({ eventId }: { eventId: string }) {
     <Card>
       <div id="outreach-assist" className="scroll-mt-24">
         <AssistHeader
-          eyebrow="Skill · outreach"
+          accent="violet"
+          role="outreach"
           title="Outreach Assist"
-          subtitle="Writes the Slack post or partner email. Approve-before-send is enforced."
+          helper="Writes the Slack post or partner email. Applying queues a draft in Approvals — nothing sends."
           badge="Never auto-sends"
         />
 
+        <p className="mb-2 text-xs font-medium uppercase tracking-wide text-zinc-400 dark:text-zinc-500">
+          Pick an angle
+        </p>
         <div className="flex flex-wrap items-center gap-2">
           {PRESETS.map((option) => (
             <button
@@ -104,17 +109,14 @@ export function OutreachAssist({ eventId }: { eventId: string }) {
           ))}
         </div>
 
-        <div className="mt-3 flex flex-wrap items-center gap-3">
+        <div className="mt-4">
           <GenerateButton
             onClick={() => handleGenerate(preset)}
             loading={phase === "loading"}
             loadingLabel="Drafting…"
           >
-            ✉️ Draft message
+            ✉️ Draft outreach
           </GenerateButton>
-          <p className="text-xs text-zinc-500 dark:text-zinc-400">
-            Applying saves a draft to Approvals — an officer still has to approve it.
-          </p>
         </div>
 
         {phase === "error" && error ? <ErrorBanner message={error} /> : null}
@@ -127,19 +129,16 @@ export function OutreachAssist({ eventId }: { eventId: string }) {
             summary={response.summary}
             footer={
               <>
-                <button
-                  type="button"
+                <ApplyButton
                   onClick={handleApply}
+                  saving={phase === "applying"}
                   disabled={phase === "applying" || picked.size === 0}
-                  className="rounded-md bg-zinc-900 px-4 py-2 text-sm font-medium text-white transition hover:bg-zinc-800 disabled:cursor-not-allowed disabled:opacity-50 dark:bg-zinc-100 dark:text-zinc-900"
                 >
-                  {phase === "applying"
-                    ? "Saving…"
-                    : `Save ${picked.size} draft${picked.size === 1 ? "" : "s"} to Approvals`}
-                </button>
-                <SecondaryButton onClick={dismiss} disabled={phase === "applying"}>
-                  Dismiss
-                </SecondaryButton>
+                  {`Save ${picked.size} draft${picked.size === 1 ? "" : "s"} to Approvals`}
+                </ApplyButton>
+                <QuietButton onClick={dismiss} disabled={phase === "applying"}>
+                  Cancel
+                </QuietButton>
                 <span className="text-xs text-zinc-500 dark:text-zinc-400">
                   No message leaves the app from here.
                 </span>
