@@ -33,9 +33,26 @@ type Sections = {
   draft: boolean;
 };
 
-/** Light keyword parse; anything unrecognized asks for the full AFTERS package. */
+const FULL_PACKAGE: Sections = {
+  metrics: true,
+  followUps: true,
+  debrief: true,
+  survey: true,
+  draft: true,
+};
+
+/**
+ * Light keyword parse. A request for the whole package, or anything
+ * unrecognized, returns every section — narrowing only happens when the input
+ * names specific sections.
+ */
 export function parseSections(input: string): Sections {
   const text = input.toLowerCase();
+
+  if (/\bfull\b|\bwhole\b|\beverything\b|\bpackage\b|\bafters\b/.test(text)) {
+    return { ...FULL_PACKAGE };
+  }
+
   const asked = {
     metrics: /\bmetric|attendance|headcount|number|signup/.test(text),
     followUps: /\bfollow[-\s]?up|next step|todo/.test(text),
@@ -45,10 +62,7 @@ export function parseSections(input: string): Sections {
   };
 
   const anyAsked = Object.values(asked).some(Boolean);
-  if (!anyAsked) {
-    return { metrics: true, followUps: true, debrief: true, survey: true, draft: true };
-  }
-  return asked;
+  return anyAsked ? asked : { ...FULL_PACKAGE };
 }
 
 const BASELINE_METRICS: MetricSuggestion[] = [

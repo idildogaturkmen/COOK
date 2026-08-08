@@ -3,20 +3,22 @@
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import {
+  ApplyButton,
   BulletList,
   CheckRow,
   ErrorBanner,
   GenerateButton,
   PreviewSection,
   PreviewShell,
+  QuietButton,
   ResultBanner,
-  SecondaryButton,
 } from "@/components/assist/ui";
 import { useAssist } from "@/components/assist/use-assist";
 import { applyAfters } from "@/lib/actions/assist";
 import type { MetricsData } from "@/lib/ai/types";
 
-const DEFAULT_INPUT = "Generate full AFTERS debrief, follow-ups, and thank-you draft";
+const DEFAULT_INPUT =
+  "Generate the full AFTERS package: metrics to log, follow-ups, debrief, survey, and a thank-you draft";
 
 function formatDue(iso?: string): string | undefined {
   if (!iso) return undefined;
@@ -52,6 +54,13 @@ export function AftersAssist({ eventId }: { eventId: string }) {
     if (next.has(index)) next.delete(index);
     else next.add(index);
     apply(next);
+  }
+
+  function selectAll() {
+    if (!data) return;
+    setPickedMetrics(new Set(data.metrics.map((_, i) => i)));
+    setPickedFollowUps(new Set(data.followUps.map((_, i) => i)));
+    if (data.draftPreview) setSaveThankYou(true);
   }
 
   const selectedCount =
@@ -129,14 +138,9 @@ export function AftersAssist({ eventId }: { eventId: string }) {
 
   return (
     <div className="mt-6 border-t border-zinc-200 pt-5 dark:border-zinc-800">
-      <div className="flex flex-wrap items-center gap-3">
-        <GenerateButton onClick={handleGenerate} loading={busy} loadingLabel="Writing AFTERS…">
-          ✨ Generate with AFTERS
-        </GenerateButton>
-        <p className="text-xs text-zinc-500 dark:text-zinc-400">
-          Drafts a debrief, metrics to log, and follow-ups. You confirm before anything saves.
-        </p>
-      </div>
+      <GenerateButton onClick={handleGenerate} loading={busy} loadingLabel="Writing AFTERS…">
+        ✨ Generate with AFTERS
+      </GenerateButton>
 
       {phase === "error" && error ? <ErrorBanner message={error} /> : null}
       {phase === "done" && result ? (
@@ -148,19 +152,21 @@ export function AftersAssist({ eventId }: { eventId: string }) {
           summary={response.summary}
           footer={
             <>
-              <button
-                type="button"
+              <ApplyButton
                 onClick={handleApply}
+                saving={phase === "applying"}
                 disabled={phase === "applying" || selectedCount === 0}
-                className="rounded-md bg-zinc-900 px-4 py-2 text-sm font-medium text-white transition hover:bg-zinc-800 disabled:cursor-not-allowed disabled:opacity-50 dark:bg-zinc-100 dark:text-zinc-900"
               >
-                {phase === "applying" ? "Saving…" : `Apply selected (${selectedCount})`}
-              </button>
-              <SecondaryButton onClick={dismiss} disabled={phase === "applying"}>
-                Dismiss
-              </SecondaryButton>
+                {`Apply selected (${selectedCount})`}
+              </ApplyButton>
+              <QuietButton onClick={selectAll} disabled={phase === "applying"}>
+                Select all
+              </QuietButton>
+              <QuietButton onClick={dismiss} disabled={phase === "applying"}>
+                Cancel
+              </QuietButton>
               <span className="text-xs text-zinc-500 dark:text-zinc-400">
-                Nothing is saved or sent until you press Apply.
+                Nothing saves until you press Apply.
               </span>
             </>
           }
@@ -172,7 +178,10 @@ export function AftersAssist({ eventId }: { eventId: string }) {
           ) : null}
 
           {data.metrics.length > 0 ? (
-            <PreviewSection title="Metrics to log" hint="Tick, then type the real number">
+            <PreviewSection
+              title="Metrics to log"
+              hint={`${data.metrics.length} suggested · type the real number`}
+            >
               <div className="space-y-2">
                 {data.metrics.map((metric, index) => (
                   <CheckRow
@@ -210,7 +219,10 @@ export function AftersAssist({ eventId }: { eventId: string }) {
           ) : null}
 
           {data.followUps.length > 0 ? (
-            <PreviewSection title="Follow-ups" hint="+2 days · +1 week · +1 month">
+            <PreviewSection
+              title="Follow-ups"
+              hint={`${data.followUps.length} suggested · +2 days, +1 week, +1 month`}
+            >
               <div className="space-y-2">
                 {data.followUps.map((followUp, index) => (
                   <CheckRow
@@ -261,7 +273,10 @@ export function AftersAssist({ eventId }: { eventId: string }) {
           ) : null}
 
           {data.surveyQuestions && data.surveyQuestions.length > 0 ? (
-            <PreviewSection title="Pulse survey" hint="Paste into your form">
+            <PreviewSection
+              title="Pulse survey"
+              hint={`${data.surveyQuestions?.length ?? 0} questions · paste into your form`}
+            >
               <ol className="list-inside list-decimal space-y-1 text-sm text-zinc-700 dark:text-zinc-300">
                 {data.surveyQuestions.map((question, i) => (
                   <li key={i}>{question}</li>
