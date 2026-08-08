@@ -6,7 +6,7 @@ description: Use when sourcing disposable/cafe/party supplies on Amazon for a cl
 # Amazon event supplies
 
 ## When to use
-After the event is conceptually locked (date, rough headcount, theme). For food that should be picked up fresh (e.g. In-N-Out), use a separate skill — do not put that in the Amazon cart.
+After the event is conceptually locked (date, rough headcount, theme). For food from any restaurant or delivery app, use **Event food order** — do not put that in the Amazon cart.
 
 ## Hard product filters (all required)
 Before adding ANY item to the cart, verify on the product page:
