@@ -10,7 +10,7 @@ Run these in order; do not skip the lock gate.
 1. Run **Plan club event** → concept + invite copy draft.
 2. Run **Luma event invite** → collect **vibes**, **brand assets**, and **language**; fill draft in browser using those inputs (no publish without yes).
 3. Wait for explicit lock: final date, headcount, budget.
-4. Run **Amazon event supplies** with filters: **>500 reviews**, **≥4.6 stars**, **delivery ≥2 days before event**. Cart only until approval.
+4. Run **Amazon event supplies** with filters: **>500 reviews**, **tiered rating** (prefer ≥4.6, else ≥4.5, else ≥4.4; below 4.4 reject — note tier used), **delivery ≥2 days before event**. Cart only until approval.
 5. Run **Event food order** — user picks any restaurant/app; separate food plan (no default vendor).
 6. Day-of checklist from the plan skill.
 
