@@ -38,19 +38,21 @@ Reusable Cursor / Grok Bot skills for college club event planning (standalone fr
 
 | Skill | Folder | Responsibility |
 |-------|--------|----------------|
-| Plan club event | `skills/plan-club-event/` | Concept, budget, run-of-show, lock gates before ordering |
-| Luma event invite | `skills/luma-event-invite/` | Collect vibes, brand assets, and language; draft Luma invite in browser; no publish without yes |
-| Amazon event supplies | `skills/amazon-event-supplies/` | Headcount-based quantity research; cafe/party supplies with quality + delivery filters (prefer slightly too much) |
-| Event food order | `skills/event-food-order/` | Food from any restaurant/app — separate from the Amazon cart |
+| Plan club event | `skills/plan-club-event/` | Intake (ZIP + Luma creative inputs), concept, budget, run-of-show, Amazon-vs-local note, lock gates |
+| Luma event invite | `skills/luma-event-invite/` | Collect vibes, brand assets, and language **before** opening Luma; one browser pass; screenshot; stop before Publish |
+| Amazon event supplies | `skills/amazon-event-supplies/` | Headcount + ZIP quantity math (1.3–1.5× buffer); tiered ratings; ASIN shortlist; Amazon vs local split; dry-run safe |
+| Event food order | `skills/event-food-order/` | Any vendor; headcount + ~10% buffer; dietary split; cost estimate before pay — separate from Amazon cart |
 | In-N-Out event order | `skills/innout-event-order/` | **Deprecated alias** → use Event food order |
-| RSVP club loop | `skills/rsvp-club-loop/` | End-to-end orchestration across the skills above |
+| RSVP club loop | `skills/rsvp-club-loop/` | End-to-end orchestration: plan → Luma → lock (incl. ZIP) → Amazon → food → day-of |
 
 Typical flow:
 
-1. Plan the event (concept, budget, run-of-show)
-2. Create the Luma event invite via `luma-event-invite` — collect **vibes**, **brand assets**, and **language** first; draft in browser; no publish without yes
-3. Source cafe/party supplies on Amazon with quality + delivery bars
-4. Run a separate **Event food order** plan (user picks vendor) — never mixed into the Amazon cart
+1. **Plan** the event (concept, budget, run-of-show, ZIP, vibes/brand/language intake)
+2. **Luma invite** via `luma-event-invite` — creative inputs first, one browser pass, screenshot, no publish without yes
+3. **Lock** final date, headcount, budget, and ZIP
+4. **Amazon supplies** — quantity math, tiered ratings (>500 reviews, ≥4.6/4.5/4.4), delivery ≥2 days to ZIP; durables on Amazon, milk/ice local
+5. **Food order** — user picks vendor; ~10% buffer, dietary split, cost estimate before pay — never mixed into the Amazon cart
+6. **Day-of** checklist from the plan skill
 
 ### Install on another account
 
@@ -60,7 +62,7 @@ Copy the skill folders under `skills/` into that agent's workflows / skills dire
 
 - Fun "matcha cafe" station the organizer runs themselves
 - User-chosen food vendor via Event food order (no default restaurant)
-- Dry-run safe: never publish invites or checkout without explicit approval
+- **DEMO / dry-run safe:** never publish invites or checkout without explicit approval
 
 ## How to add your skill
 
