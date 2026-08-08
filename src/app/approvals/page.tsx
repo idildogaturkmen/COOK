@@ -19,16 +19,29 @@ const statusLabel: Record<string, string> = {
   REJECTED: "Rejected",
 };
 
+const statusRank: Record<string, number> = {
+  AWAITING_APPROVAL: 0,
+  DRAFT: 1,
+  SENT: 2,
+  REJECTED: 3,
+};
+
 export default async function ApprovalsPage() {
   const workspaceId = await getActiveWorkspaceId();
 
   const drafts = workspaceId
-    ? await db.draft.findMany({
-        where: { workspaceId },
-        orderBy: { updatedAt: "desc" },
-        include: { event: { select: { title: true } } },
-      })
+    ? (
+        await db.draft.findMany({
+          where: { workspaceId },
+          orderBy: { updatedAt: "desc" },
+          include: { event: { select: { id: true, title: true } } },
+        })
+      ).sort((a, b) => statusRank[a.status] - statusRank[b.status])
     : [];
+
+  const awaiting = drafts.filter((d) => d.status === "AWAITING_APPROVAL").length;
+  const inDraft = drafts.filter((d) => d.status === "DRAFT").length;
+  const sent = drafts.filter((d) => d.status === "SENT").length;
 
   const events = workspaceId
     ? await db.event.findMany({
@@ -42,8 +55,32 @@ export default async function ApprovalsPage() {
     <>
       <PageHeader
         title="Approvals"
-        description="Draft queue for email and Slack outreach. Approve before send — no auto-send in M1."
-      />
+        description="Every message an officer or a skill writes stops here. Nothing is sent automatically."
+      >
+        <Link
+          href="/"
+          className="rounded-md border border-zinc-300 px-3 py-1.5 text-sm hover:bg-zinc-100 dark:border-zinc-700 dark:hover:bg-zinc-800"
+        >
+          ← Home
+        </Link>
+      </PageHeader>
+
+      {workspaceId ? (
+        <div className="mb-6 flex flex-wrap items-center gap-2 text-xs">
+          <span className="rounded-full bg-amber-100 px-2.5 py-1 font-medium text-amber-800 dark:bg-amber-900/40 dark:text-amber-200">
+            {awaiting} awaiting approval
+          </span>
+          <span className="rounded-full bg-zinc-100 px-2.5 py-1 font-medium text-zinc-700 dark:bg-zinc-800 dark:text-zinc-300">
+            {inDraft} in draft
+          </span>
+          <span className="rounded-full bg-green-100 px-2.5 py-1 font-medium text-green-800 dark:bg-green-900/40 dark:text-green-200">
+            {sent} sent
+          </span>
+          <span className="text-zinc-500 dark:text-zinc-400">
+            Drafts from Outreach Assist and AFTERS land here as “awaiting approval”.
+          </span>
+        </div>
+      ) : null}
 
       {!workspaceId ? (
         <Card>
@@ -120,7 +157,12 @@ export default async function ApprovalsPage() {
                         {statusLabel[draft.status]}
                       </span>
                       {draft.event ? (
-                        <span className="text-xs text-zinc-500">· {draft.event.title}</span>
+                        <Link
+                          href={`/events/${draft.event.id}`}
+                          className="text-xs text-zinc-500 underline-offset-2 hover:underline"
+                        >
+                          · {draft.event.title}
+                        </Link>
                       ) : null}
                     </div>
                     {draft.subject ? (
