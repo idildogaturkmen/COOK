@@ -141,6 +141,58 @@ export async function updateDraftStatus(
   revalidatePath("/approvals");
 }
 
+/** AFTERS: log a metric by hand (works with AI off). */
+export async function createMetric(eventId: string, formData: FormData): Promise<void> {
+  const workspaceId = await requireActiveWorkspaceId();
+  const name = String(formData.get("name") ?? "").trim();
+  const rawValue = String(formData.get("value") ?? "").trim();
+  const unit = String(formData.get("unit") ?? "").trim() || null;
+  const notes = String(formData.get("notes") ?? "").trim() || null;
+
+  if (!name) return;
+
+  const parsed = rawValue === "" ? null : Number(rawValue);
+  const value = parsed === null || Number.isNaN(parsed) ? null : parsed;
+
+  await db.metric.create({
+    data: { workspaceId, eventId, name, value, unit, notes },
+  });
+
+  revalidatePath(`/events/${eventId}`);
+}
+
+/** AFTERS: add a follow-up by hand (works with AI off). */
+export async function createFollowUp(eventId: string, formData: FormData): Promise<void> {
+  const title = String(formData.get("title") ?? "").trim();
+  const notes = String(formData.get("notes") ?? "").trim() || null;
+  const dueAtRaw = String(formData.get("dueAt") ?? "").trim();
+
+  if (!title) return;
+
+  await db.followUp.create({
+    data: {
+      eventId,
+      title,
+      notes,
+      dueAt: dueAtRaw ? new Date(dueAtRaw) : null,
+    },
+  });
+
+  revalidatePath(`/events/${eventId}`);
+}
+
+export async function toggleFollowUp(followUpId: string, eventId: string): Promise<void> {
+  const followUp = await db.followUp.findUnique({ where: { id: followUpId } });
+  if (!followUp) return;
+
+  await db.followUp.update({
+    where: { id: followUpId },
+    data: { completed: !followUp.completed },
+  });
+
+  revalidatePath(`/events/${eventId}`);
+}
+
 export async function toggleTaskStatus(taskId: string, eventId: string): Promise<void> {
   const task = await db.task.findUnique({ where: { id: taskId } });
   if (!task) return;
