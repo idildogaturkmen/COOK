@@ -190,9 +190,12 @@ export function AftersAssist({ eventId }: { eventId: string }) {
                         aria-label={`Value for ${metric.name}`}
                         placeholder={metric.value != null ? String(metric.value) : "value"}
                         value={metricValues[index] ?? ""}
-                        onChange={(e) =>
-                          setMetricValues((prev) => ({ ...prev, [index]: e.target.value }))
-                        }
+                        onChange={(e) => {
+                          setMetricValues((prev) => ({ ...prev, [index]: e.target.value }));
+                          if (e.target.value !== "") {
+                            setPickedMetrics((prev) => new Set(prev).add(index));
+                          }
+                        }}
                         onClick={(e) => e.stopPropagation()}
                         className="w-24 rounded border border-zinc-300 px-2 py-1 text-sm dark:border-zinc-700 dark:bg-zinc-900"
                       />

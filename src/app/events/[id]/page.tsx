@@ -290,13 +290,13 @@ export default async function EventDetailPage({ params }: EventPageProps) {
                   </p>
                 )}
 
-                <form action={createMetricAction} className="grid grid-cols-6 gap-2">
+                <form action={createMetricAction} className="grid grid-cols-2 gap-2 sm:grid-cols-6">
                   <input
                     name="name"
                     placeholder="attendance"
                     aria-label="Metric name"
                     required
-                    className={`col-span-3 ${inputClass}`}
+                    className={`col-span-2 sm:col-span-3 ${inputClass}`}
                   />
                   <input
                     name="value"
@@ -304,7 +304,7 @@ export default async function EventDetailPage({ params }: EventPageProps) {
                     step="any"
                     placeholder="31"
                     aria-label="Metric value"
-                    className={`col-span-2 ${inputClass}`}
+                    className={`col-span-1 sm:col-span-2 ${inputClass}`}
                   />
                   <input
                     name="unit"
@@ -316,7 +316,7 @@ export default async function EventDetailPage({ params }: EventPageProps) {
                     name="notes"
                     placeholder="Notes (optional)"
                     aria-label="Metric notes"
-                    className={`col-span-4 ${inputClass}`}
+                    className={`col-span-2 sm:col-span-4 ${inputClass}`}
                   />
                   <button
                     type="submit"
@@ -373,13 +373,13 @@ export default async function EventDetailPage({ params }: EventPageProps) {
                   </p>
                 )}
 
-                <form action={createFollowUpAction} className="grid grid-cols-6 gap-2">
+                <form action={createFollowUpAction} className="grid grid-cols-2 gap-2 sm:grid-cols-6">
                   <input
                     name="title"
                     placeholder="Send thank-you note"
                     aria-label="Follow-up title"
                     required
-                    className={`col-span-4 ${inputClass}`}
+                    className={`col-span-2 sm:col-span-4 ${inputClass}`}
                   />
                   <input
                     name="dueAt"
@@ -391,7 +391,7 @@ export default async function EventDetailPage({ params }: EventPageProps) {
                     name="notes"
                     placeholder="Notes (optional)"
                     aria-label="Follow-up notes"
-                    className={`col-span-4 ${inputClass}`}
+                    className={`col-span-2 sm:col-span-4 ${inputClass}`}
                   />
                   <button
                     type="submit"
