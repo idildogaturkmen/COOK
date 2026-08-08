@@ -32,6 +32,35 @@ Club Event Ops (COOK) separates the **app spine** from **AI skills** so teammate
 | `metrics` | `skills/metrics/` | Attendance, follow-ups, insights |
 | `manager` | (router only) | Intent routing to the right skill |
 
+## Club event / RSVP skills
+
+Reusable Cursor / Grok Bot skills for college club event planning (standalone from the `/api/ai` roles above):
+
+| Skill | Folder | Responsibility |
+|-------|--------|----------------|
+| Plan club event | `skills/plan-club-event/` | Concept, budget, run-of-show, lock gates before ordering |
+| Luma event invite | `skills/luma-event-invite/` | Draft Luma invite in browser; no publish without yes |
+| Amazon event supplies | `skills/amazon-event-supplies/` | Cafe/party supplies with quality + delivery filters |
+| In-N-Out event order | `skills/innout-event-order/` | Pickup food run plan — separate from the Amazon cart |
+| RSVP club loop | `skills/rsvp-club-loop/` | End-to-end orchestration across the skills above |
+
+Typical flow:
+
+1. Plan the event (concept, budget, run-of-show)
+2. Create the Luma event invite via `luma-event-invite` (draft in browser; no publish without yes)
+3. Source cafe/party supplies on Amazon with quality + delivery bars
+4. Run a separate In-N-Out (or similar) food order plan — never mixed into the Amazon cart
+
+### Install on another account
+
+Copy the skill folders under `skills/` into that agent's workflows / skills directory, or add this repo as the shared skills source your team uses. Each `SKILL.md` is self-contained.
+
+### Demo defaults (Cursor Build Night)
+
+- Fun "matcha cafe" station the organizer runs themselves
+- In-N-Out as a mid-event food run
+- Dry-run safe: never publish invites or checkout without explicit approval
+
 ## How to add your skill
 
 1. Read your `skills/<role>/SKILL.md` contract.
