@@ -40,7 +40,7 @@ Reusable Cursor / Grok Bot skills for college club event planning (standalone fr
 |-------|--------|----------------|
 | Plan club event | `skills/plan-club-event/` | Concept, budget, run-of-show, lock gates before ordering |
 | Luma event invite | `skills/luma-event-invite/` | Collect vibes, brand assets, and language; draft Luma invite in browser; no publish without yes |
-| Amazon event supplies | `skills/amazon-event-supplies/` | Cafe/party supplies with quality + delivery filters |
+| Amazon event supplies | `skills/amazon-event-supplies/` | Headcount-based quantity research; cafe/party supplies with quality + delivery filters (prefer slightly too much) |
 | Event food order | `skills/event-food-order/` | Food from any restaurant/app — separate from the Amazon cart |
 | In-N-Out event order | `skills/innout-event-order/` | **Deprecated alias** → use Event food order |
 | RSVP club loop | `skills/rsvp-club-loop/` | End-to-end orchestration across the skills above |
