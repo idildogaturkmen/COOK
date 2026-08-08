@@ -43,7 +43,7 @@ Copy `.env.example` to `.env`. **Never commit secrets.**
 
 | Area | Path | Purpose |
 |------|------|---------|
-| Home digest | `src/app/page.tsx` | This-week events, open tasks, draft count |
+| Home cockpit | `src/app/page.tsx` | Skills strip, counters, events in the next 14 days |
 | Event detail | `src/app/events/[id]/page.tsx` | Brief, tasks, run-of-show, Ops/Outreach/AFTERS panels |
 | Approvals | `src/app/approvals/page.tsx` | Draft queue (approve-before-send) |
 | CRUD actions | `src/lib/actions/crud.ts` | Server actions for all manual ops |
