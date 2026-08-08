@@ -2,9 +2,10 @@
 
 Reusable Cursor / Grok Bot skills for college club event planning:
 
-1. Plan the event + invite copy (Luma/Partiful)
-2. Source cafe/party supplies on Amazon with quality + delivery bars
-3. Run a separate In-N-Out (or similar) food order plan — never mixed into the Amazon cart
+1. Plan the event (concept, budget, run-of-show)
+2. Create the Luma event invite via the `Luma event invite` skill (draft in browser; no publish without yes)
+3. Source cafe/party supplies on Amazon with quality + delivery bars
+4. Run a separate In-N-Out (or similar) food order plan — never mixed into the Amazon cart
 
 ## Install on another account
 
