@@ -12,8 +12,8 @@ import {
   PreviewSection,
   PreviewShell,
   QuietButton,
+  ResultBanner,
 } from "@/components/assist/ui";
-import { ResultBanner } from "@/components/assist/ui";
 import { useAssist } from "@/components/assist/use-assist";
 import { Card } from "@/components/card";
 import { applyOps } from "@/lib/actions/assist";
